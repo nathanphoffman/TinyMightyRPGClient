@@ -53,12 +53,12 @@ export default function NewCharacterPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center p-16">
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Create a character</CardTitle>
+    <main className="flex flex-1 flex-col items-center px-6 py-12">
+      <Card className="w-full max-w-lg animate-in fade-in duration-700">
+        <CardHeader className="border-b border-border">
+          <CardTitle className="text-2xl">Create your character</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form
             className="flex flex-col gap-5"
             onSubmit={handleSubmit((values) => createCharacter.mutate(values))}
@@ -73,7 +73,7 @@ export default function NewCharacterPage() {
               <Label htmlFor="class">Class</Label>
               <select
                 id="class"
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 {...register("class")}
               >
                 {CharacterClass.options.map((option) => (
@@ -88,13 +88,17 @@ export default function NewCharacterPage() {
               <p className="mb-2 text-sm font-medium">Ability scores</p>
               <div className="grid grid-cols-3 gap-3">
                 {AbilityScoreName.options.map((ability) => (
-                  <div key={ability} className="flex flex-col gap-1.5">
-                    <Label htmlFor={ability} className="capitalize">
+                  <div
+                    key={ability}
+                    className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted p-2"
+                  >
+                    <Label htmlFor={ability} className="text-xs capitalize text-muted-foreground">
                       {ability}
                     </Label>
                     <Input
                       id={ability}
                       type="number"
+                      className="bg-card"
                       {...register(`abilityScores.${ability}`, { valueAsNumber: true })}
                     />
                   </div>
