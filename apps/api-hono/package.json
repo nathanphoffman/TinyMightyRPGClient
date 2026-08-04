@@ -1,0 +1,34 @@
+{
+  "name": "api-hono",
+  "version": "0.0.0",
+  "description": "TinyMightyRPG real-time gateway: live play sessions over WebSocket",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "start": "node dist/index.js",
+    "lint": "biome lint .",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.0",
+    "@hono/node-ws": "^1.3.1",
+    "@tmrpg/db": "workspace:*",
+    "@tmrpg/schemas": "workspace:*",
+    "hono": "^4.13.0",
+    "jose": "^6.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@tmrpg/config": "workspace:*",
+    "@types/node": "^24.0.0",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.5",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

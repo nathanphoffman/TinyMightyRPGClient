@@ -1,0 +1,16 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
+  "extends": ["./packages/config/biome.base.json"],
+  "files": {
+    "includes": [
+      "apps/**/*.ts",
+      "apps/**/*.tsx",
+      "packages/**/*.ts",
+      "packages/**/*.tsx",
+      "!**/dist/**",
+      "!**/.next/**",
+      "!**/generated/**",
+      "!**/node_modules/**"
+    ]
+  }
+}

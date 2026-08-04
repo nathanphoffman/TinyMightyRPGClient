@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime @default(now())
+
+  characters      Character[]
+  campaignsRun    Campaign[]  @relation("CampaignGm")
+
+  @@map("users")
+}
+
+model Character {
+  id           String   @id @default(uuid())
+  name         String
+  class        String
+  level        Int      @default(1)
+
+  strength     Int
+  dexterity    Int
+  constitution Int
+  intelligence Int
+  wisdom       Int
+  charisma     Int
+
+  hpCurrent    Int
+  hpMax        Int
+
+  // Flexible list of items; kept as JSON rather than a separate table
+  // since inventory shape is still evolving and always loaded/saved as a whole.
+  inventory    Json     @default("[]")
+
+  ownerId      String
+  owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  memberships  CampaignMember[]
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([ownerId])
+  @@map("characters")
+}
+
+model Campaign {
+  id        String   @id @default(uuid())
+  name      String
+  gmId      String
+  gm        User     @relation("CampaignGm", fields: [gmId], references: [id], onDelete: Cascade)
+
+  members   CampaignMember[]
+
+  createdAt DateTime @default(now())
+
+  @@index([gmId])
+  @@map("campaigns")
+}
+
+model CampaignMember {
+  campaignId  String
+  characterId String
+
+  campaign    Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  joinedAt    DateTime  @default(now())
+
+  @@id([campaignId, characterId])
+  @@map("campaign_members")
+}

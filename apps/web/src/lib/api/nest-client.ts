@@ -1,0 +1,38 @@
+import type { Character, CreateCharacterInput, CreateUserInput, LoginInput } from "@tmrpg/schemas";
+import { env } from "../env";
+
+async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
+  const res = await fetch(`${env.NEXT_PUBLIC_NEST_API_URL}${path}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Request to ${path} failed with ${res.status}`);
+  }
+
+  return res.json() as Promise<T>;
+}
+
+// Hand-typed client keyed off the same Zod schemas the API validates
+// against. Swappable later for an openapi-typescript generated client
+// without touching call sites.
+export const nestApi = {
+  login: (input: LoginInput) =>
+    request<{ accessToken: string }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  register: (input: CreateUserInput) =>
+    request<{ accessToken: string }>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify(input),
+    }),
+  listCharacters: (token: string) => request<Character[]>("/characters", {}, token),
+  createCharacter: (input: CreateCharacterInput, token: string) =>
+    request<Character>("/characters", { method: "POST", body: JSON.stringify(input) }, token),
+};
