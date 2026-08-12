@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { LoginInput } from "@tmrpg/schemas";
+import { CreateUserInput } from "@tmrpg/schemas";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
 
@@ -22,11 +22,11 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(LoginInput),
+    resolver: zodResolver(CreateUserInput),
   });
 
-  const login = useMutation({
-    mutationFn: nestApi.login,
+  const createAccount = useMutation({
+    mutationFn: nestApi.register,
     onSuccess: ({ accessToken }) => {
       setAccessToken(accessToken);
       router.push("/characters");
@@ -37,13 +37,21 @@ export default function LoginPage() {
     <main className="flex flex-1 items-center justify-center p-16">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Log in</CardTitle>
+          <CardTitle>Create an account</CardTitle>
         </CardHeader>
         <CardContent>
           <form
             className="flex flex-col gap-4"
-            onSubmit={handleSubmit((values) => login.mutate(values))}
+            onSubmit={handleSubmit((values) => createAccount.mutate(values))}
           >
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="displayName">Display name</Label>
+              <Input id="displayName" {...register("displayName")} />
+              {errors.displayName && (
+                <p className="text-sm text-destructive">{errors.displayName.message}</p>
+              )}
+            </div>
+
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input id="email" type="email" {...register("email")} />
@@ -58,16 +66,18 @@ export default function LoginPage() {
               )}
             </div>
 
-            {login.isError && <p className="text-sm text-destructive">Invalid credentials.</p>}
+            {createAccount.isError && (
+              <p className="text-sm text-destructive">Couldn&apos;t create account.</p>
+            )}
 
-            <Button type="submit" disabled={login.isPending}>
-              {login.isPending ? "Logging in…" : "Log in"}
+            <Button type="submit" disabled={createAccount.isPending}>
+              {createAccount.isPending ? "Creating account…" : "Create account"}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
-              Need an account?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Sign up
+              Already have an account?{" "}
+              <Link href="/login" className="underline underline-offset-4">
+                Log in
               </Link>
             </p>
           </form>
