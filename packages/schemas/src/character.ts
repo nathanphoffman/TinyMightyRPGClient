@@ -1,28 +1,16 @@
 import { z } from "zod";
 import { CharacterId, UserId } from "./ids.js";
 
-export const AbilityScoreName = z.enum([
-  "strength",
-  "dexterity",
-  "constitution",
-  "intelligence",
-  "wisdom",
-  "charisma",
-]);
-export type AbilityScoreName = z.infer<typeof AbilityScoreName>;
+export const SkillName = z.enum(["physique", "wits", "charm", "senses"]);
+export type SkillName = z.infer<typeof SkillName>;
 
-export const AbilityScores = z.object({
-  strength: z.number().int().min(1).max(30),
-  dexterity: z.number().int().min(1).max(30),
-  constitution: z.number().int().min(1).max(30),
-  intelligence: z.number().int().min(1).max(30),
-  wisdom: z.number().int().min(1).max(30),
-  charisma: z.number().int().min(1).max(30),
+export const Skills = z.object({
+  physique: z.number().int().min(0).max(3),
+  wits: z.number().int().min(0).max(3),
+  charm: z.number().int().min(0).max(3),
+  senses: z.number().int().min(0).max(3),
 });
-export type AbilityScores = z.infer<typeof AbilityScores>;
-
-export const CharacterClass = z.enum(["fighter", "wizard", "rogue", "cleric", "ranger", "bard"]);
-export type CharacterClass = z.infer<typeof CharacterClass>;
+export type Skills = z.infer<typeof Skills>;
 
 export const InventoryItem = z.object({
   id: z.uuid(),
@@ -43,9 +31,8 @@ export const CharacterSchema = z.object({
   id: CharacterId,
   ownerId: UserId,
   name: z.string().min(1).max(60),
-  class: CharacterClass,
   level: z.number().int().min(1).max(20).default(1),
-  abilityScores: AbilityScores,
+  skills: Skills,
   hitPoints: HitPoints,
   inventory: z.array(InventoryItem).default([]),
   createdAt: z.coerce.date(),
@@ -55,8 +42,7 @@ export type Character = z.infer<typeof CharacterSchema>;
 
 export const CreateCharacterInput = z.object({
   name: z.string().min(1).max(60),
-  class: CharacterClass,
-  abilityScores: AbilityScores,
+  skills: Skills,
 });
 export type CreateCharacterInput = z.infer<typeof CreateCharacterInput>;
 

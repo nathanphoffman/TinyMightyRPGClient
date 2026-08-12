@@ -4,14 +4,7 @@ import type { CreateCharacterInput, UpdateCharacterInput } from "@tmrpg/schemas"
 import { PRISMA } from "../common/database/database.module.js";
 import { toDomainCharacter } from "./characters.mapper.js";
 
-const BASE_HP_BY_CLASS: Record<string, number> = {
-  fighter: 12,
-  wizard: 6,
-  rogue: 8,
-  cleric: 10,
-  ranger: 10,
-  bard: 8,
-};
+const STARTING_HEALTH = 15;
 
 @Injectable()
 export class CharactersService {
@@ -34,15 +27,13 @@ export class CharactersService {
   }
 
   async create(userId: string, input: CreateCharacterInput) {
-    const baseHp = BASE_HP_BY_CLASS[input.class] ?? 8;
     const row = await this.db.character.create({
       data: {
         name: input.name,
-        class: input.class,
         ownerId: userId,
-        ...input.abilityScores,
-        hpCurrent: baseHp,
-        hpMax: baseHp,
+        ...input.skills,
+        hpCurrent: STARTING_HEALTH,
+        hpMax: STARTING_HEALTH,
         inventory: [],
       },
     });

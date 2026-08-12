@@ -43,7 +43,7 @@ export default function CharactersPage() {
           <Card key={character.id}>
             <CardHeader>
               <CardTitle>
-                {character.name} — Level {character.level} {character.class}
+                {character.name} — Level {character.level}
               </CardTitle>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">

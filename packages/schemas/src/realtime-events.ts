@@ -10,7 +10,7 @@ export const DiceRollEvent = z.object({
   type: z.literal("dice_roll"),
   campaignId: CampaignId,
   characterId: CharacterId,
-  notation: z.string().min(1).max(20), // e.g. "1d20+5"
+  notation: z.string().min(1).max(20), // e.g. "2d6+3"
   result: z.number().int(),
   rolledAt: z.coerce.date(),
 });

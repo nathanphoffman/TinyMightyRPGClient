@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { AbilityScoreName, CharacterClass, CreateCharacterInput } from "@tmrpg/schemas";
+import { CreateCharacterInput, SkillName } from "@tmrpg/schemas";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
-const DEFAULT_SCORE = 10;
+const DEFAULT_SCORE = 0;
 
 export default function NewCharacterPage() {
   const router = useRouter();
@@ -26,14 +26,11 @@ export default function NewCharacterPage() {
     resolver: zodResolver(CreateCharacterInput),
     defaultValues: {
       name: "",
-      class: CharacterClass.options[0] ?? "fighter",
-      abilityScores: {
-        strength: DEFAULT_SCORE,
-        dexterity: DEFAULT_SCORE,
-        constitution: DEFAULT_SCORE,
-        intelligence: DEFAULT_SCORE,
-        wisdom: DEFAULT_SCORE,
-        charisma: DEFAULT_SCORE,
+      skills: {
+        physique: DEFAULT_SCORE,
+        wits: DEFAULT_SCORE,
+        charm: DEFAULT_SCORE,
+        senses: DEFAULT_SCORE,
       },
     },
   });
@@ -69,37 +66,22 @@ export default function NewCharacterPage() {
               {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
             </div>
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="class">Class</Label>
-              <select
-                id="class"
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                {...register("class")}
-              >
-                {CharacterClass.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             <div>
-              <p className="mb-2 text-sm font-medium">Ability scores</p>
+              <p className="mb-2 text-sm font-medium">Skills</p>
               <div className="grid grid-cols-3 gap-3">
-                {AbilityScoreName.options.map((ability) => (
+                {SkillName.options.map((skill) => (
                   <div
-                    key={ability}
+                    key={skill}
                     className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted p-2"
                   >
-                    <Label htmlFor={ability} className="text-xs capitalize text-muted-foreground">
-                      {ability}
+                    <Label htmlFor={skill} className="text-xs capitalize text-muted-foreground">
+                      {skill}
                     </Label>
                     <Input
-                      id={ability}
+                      id={skill}
                       type="number"
                       className="bg-card"
-                      {...register(`abilityScores.${ability}`, { valueAsNumber: true })}
+                      {...register(`skills.${skill}`, { valueAsNumber: true })}
                     />
                   </div>
                 ))}

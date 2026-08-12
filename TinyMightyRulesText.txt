@@ -1,0 +1,193 @@
+Tiny Mighty RPG 1.09
+
+TMRPG is a setting agnostic micro-RPG that relies on imagination rather than hefty rules-tomes; it is a toolkit to construct the character you want to play in the world you want to play in. To play Tiny-Mighty, you need: this double-sided page, character sheets, erasable pen(cil)s, and 3x 6-sided dice (3d6) for each player. Minis / tokens and terrain (or paper drawings) are also helpful for combat. 
+
+Challenges
+
+If a player attempts something where the outcome is in doubt, the player rolls 2x 6-sided dice (2d6) to determine if they succeed or fail, the player then adds their two die results plus their relevant skill.
+    • On a 6 or less they fail. `You fail to jump to the other side and fall into the ravine.’
+    • On a 7, 8, 9 their fate is in the GM’s hands, they may fully succeed, fail (or a bit of both) ‘You miss the jump but grasp the edge.`
+    • On a 10 or 11 they succeed nearly all tasks. `You jump the ravine successfully.` 
+    • On a 12+ they succeed even impossiblish tasks `You jump between the skyscrapers!`
+
+The Four Skills
+    • Physique: athletics, fists & threats
+    • Wits: genius, locks/tech, & sleight-of-hand
+    • Charm: hiding, persuasion & manipulation
+    • Senses: physical senses & detecting lies
+      
+Advantage / Disadvantage
+The GM can choose to give a player advantage on their roll if the player’s story would benefit them in facing the challenge: the player rolls 3d6 and takes the highest 2, likewise, if a player is at a disadvantage (eg. is drunk) they roll 3d6 and take the lowest 2. The player still adds their skill bonus.
+Combat
+
+Combat begins with the players (unless they are ambushed). Players then take turns in any order they wish, with the GM activating all creatures after the players have gone. Players & NPCs can move 1-pencil length & do one thing on their turn: attacking, moving again, using a power / item, etc.
+
+To perform an attack, roll 2d6 and add the attack bonus (if using fists use the ‘physique’ bonus instead). Different types of weapons may be handled differently, like rolling disadvantage when shooting a bow point blank or using physique to attack an armed opponent, but they are resolved the same. Once the attack is calculated, the target's defense is subtracted from the attack, and the remainder is the damage dealt to the target’s health (final damages of 0 or less miss). If a player falls to 0hp, they roll a D6: on a 1 they are dead; otherwise, they are unconscious: they will forfeit their next turn to stand up with 1hp unless healed.
+
+NPCs/enemies add 1 bonus to all their non-Power rolls (attacks & skills). Unlike players, they die at 0 health. A balance table for combat is below, net difficulty should = # of players + # of levels gained.
+
+Difficulty
+Turns
+Defense
+Health
+Bonus
+0.25
+1
+d6-1 (3)
+2d6 (7)
+d6-4 (+0)
+0.50
+1
+d6 (4)
+3d6 (11)
+d6-3 (+1)
+1
+1
+d6+1 (5)
+4d6 (14)
+d6-2 (+2)
+2
+2*
+d6+2 (6)
+5d6 (18)
+d6-2 (+2)
+3
+2*
+d6+3 (7)
+6d6 (21)
+d6-1 (+3)
+4
+3*
+d6+3 (7)
+8d6 (28)
+d6 (+4)
+
+*Enemies with more turns can go between player turns
++0.50 difficulty for each 1-use power (limit 2 per creature)
+Character Creation
+
+    1. Write in your story (your name & background).
+    2. Assign a +3, +2, +1, & +0 to the 4 skills.
+    3. Choose 3 of these options, the same option can be picked multiple times, unless noted:
+        ◦ +2 to attack bonus (default is +0, max +4)
+        ◦ +2 to defense (default is 5, max 7)
+        ◦ a one use (per rest) special power
+        ◦ +1 more ‘power use’ (outline a checkbox)
+    4. Write in thematic weapons & armor to tie in your selections (eg. a big spear for a +2 attack).
+    5. Write down 3x low-value items to tie in your backstory (eg. a rope for being a climber).
+    6. Write your attack, defense, and health of 15.
+    7. Record 3d6 handfuls of coins/credits. There are 10 handfuls to a bag & 10 bags to a chest.
+
+Resting: If players rest, they can swap out 1 of their chosen options in step 3, healing to full (15) & readying powers (they can over-heal to 16-17 if they ate well). 
+Optional: to level-up, pick an additional step 3 option.
+
+Powers
+
+Powers are abilities that are invented by the player and approved by the GM. They may come from an ancestry, a spell, a special item (like a missile-launcher), or a learned ability (like a power-swing).
+
+Damage Guide:  Damage from powers ignores defense, healing uses the same dice as damage but can also target ‘self.’
+    • Multi-Target: roll 3d6, assign a single die to each target, ignore leftover dice (eg. Missiles)
+    • Direct-Target: 2d6 to 1 target (eg. Plasma beam)
+    • Area of Effect: 1d6 (eg. Fireball) to 1 pencil radii, 6s explode (on a 6 roll again – sum – repeat)
+
+Duration Guide:
+    • Instant (eg. Telekinetic Push): immediate impact
+    • Powerful (eg. Fly): 15 mins or a single battle
+    • Standard (eg. Sticky Climb): 2 hours
+
+
+
+
+More on Powers
+
+Start with your character for inspiration. If you are a wild-west sheriff, give them a multi-target western-style quick-draw). In non-damage cases, just do your best: let your frog jump 20’ for 2 hours! Remember: fun is more important than balance.
+
+Sometimes damage powers are more restrictive for “thematic” reasons, like an AOE beam of light that only passes through enemies in a line, or a direct-attack that only works in melee. If the GM approves, the player can reroll a single damage die.
+
+If you want a summon or shapeshift power - spend 1 “use” for a 0.25 difficulty creature on the combat table, move down 1 row for each additional use spent. If you turn into the creature and it dies, ignore the leftover damage and revert back (you can also choose to desummon or revert into your form on your turn). Lasts for 15 minutes or 1 battle. Flying creatures cost 1 additional use.
+
+Money Guide
+
+Handfuls, bags, & chests represent coarse currency; the GM sets the price and players can convert between handfuls, bags and chests at any time:
+Type
+Value in Handfuls
+Pricing
+*1: typical, 2: better, 3: best 
+Handfuls
+of ~10 coins / credits
+1
+Spend 1-3* handfuls for a useful item or service; 1 handful to waive petty purchases (food)
+
+(Variant) Spend 1 handful to pull 3d6 coins / credits from your pocket to buy petty items individually (change is lost)
+Bags
+10
+Spend 1-3* bags to buy mounts, rare items, or +1 (stat) items
+Chests
+100
+(record as an item**)
+Spend 1-3* chests to buy a home or ship; 10+ for castles / fleets
+**Erase 10 bags to record 1 chest
+Terrain
+
+It is very helpful to use terrain to make combat more interesting. A boulder can confer cover to the person hiding, causing incoming ranged attacks to be rolled with disadvantage. Difficult terrain (or climbing) can halve movement and dangerous terrain can deal d6 damage to all who enter it!
+
+There is no need for fancy terrain! A box can be a fortification and a packing peanut a rock to hide behind. You can even draw the battlefield on paper: dotted lines represent cover that can be jumped over, solid lines: walls, and x’s can be dangerous terrain.
+
+Advantage and Disadvantage
+
+It is essential to give a character advantage if their story applies, but story benefits should always be more specific than any general game rule (wits, attack, etc.). Ie. a player should not be assumed to roll advantage for all blaster attacks because they are a space trooper (maybe they only get advantage on the first shot that initiates the combat). However, because NPCs only use a single bonus, NPCs can have advantage or disadvantage in a skill: a dragon might have advantage with all charm checks and a skeleton disadvantage with all physique checks.
+
+Advantage Examples
+    • Performing a task that relates to your story
+    • Using teamwork to accomplish a goal
+    • Using an action to earn advantage next turn
+    • Rewarding clever or creative play
+
+Disadvantage Examples
+    • Shooting a ranged weapon while in melee
+    • Attacking an enemy behind cover
+    • Throwing a weapon not meant to be thrown
+    • Being intoxicated, poisoned, or stunned
+    • Using physique against an armed opponent
+    • Attacking multiple targets without a power
+
+Example of Play
+
+GM: The demon lord approaches the precipice.
+
+John: I shoot my bow *rolls 4,4* +2 attack, got a 10!
+ 
+GM: *10-7 = 3 damage* The arrow scratches the demon.
+
+Kim: “We will slay you demon if you come down here!”
+ 
+GM: Uh… gimme a 12+? for physique (threats)... 
+ 
+Kim: Ugh...a 3.
+ 
+GM: He laughs at Kim, gliding down, and swinging his skull-mace onto John’s head; I am giving him advantage for flying in. *rolls 4,4,6* 4+6 is 13 damage with his +3!
+ 
+John: Well 13 minus my 5 defense is more than my 6 health *rolls for death* phew a 2 can someone help me?
+ 
+Sarah: Throwing my healing-leeches! *multi-target: rolls 2,3,5* John have: 5, Kim: 2, I will take 3. 
+ 
+Tim: Enough of this! I call on my paladin’s patron *measures with a pencil* As I run, I light my blade with holy fire (direct-target power) *rolls 2,6* because it is melee I am re-rolling the 2 *rolls 6*, ok 12 damage!
+
+GM: Your sword, glows with holy fire and pierces into the heart of the demon, he screams as he crumples into ash!
+
+GM Tips
+
+
+- Be a friendly arbiter, bend the rules to make the game fun, but don’t contradict yourself.
+
+- Avoid saying ‘no’, so long as the player’s request doesn’t seem that unreasonable; instead of saying no, require an impossiblish roll (12+).
+
+- Encourage your players to help come up with items, places, powers, NPC names, etc.
+
+- RPGs are supposed to be fun, if you aren't having fun: take a break, or consider ending, changing, or doing a new campaign.
+
+- Get rid of (or modify) any rule you see fit!
+
+Thanks for reading & supporting us !!!! <3
+
+

@@ -22,15 +22,12 @@ model User {
 model Character {
   id           String   @id @default(uuid())
   name         String
-  class        String
   level        Int      @default(1)
 
-  strength     Int
-  dexterity    Int
-  constitution Int
-  intelligence Int
-  wisdom       Int
-  charisma     Int
+  physique     Int
+  wits         Int
+  charm        Int
+  senses       Int
 
   hpCurrent    Int
   hpMax        Int

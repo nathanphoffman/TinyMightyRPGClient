@@ -6,30 +6,24 @@ describe("CreateCharacterInput", () => {
   it("accepts a valid character payload", () => {
     const result = CreateCharacterInput.safeParse({
       name: "Elowen",
-      class: "ranger",
-      abilityScores: {
-        strength: 12,
-        dexterity: 16,
-        constitution: 14,
-        intelligence: 10,
-        wisdom: 13,
-        charisma: 8,
+      skills: {
+        physique: 3,
+        wits: 2,
+        charm: 1,
+        senses: 0,
       },
     });
     expect(result.success).toBe(true);
   });
 
-  it("rejects an out-of-range ability score", () => {
+  it("rejects an out-of-range skill value", () => {
     const result = CreateCharacterInput.safeParse({
       name: "Elowen",
-      class: "ranger",
-      abilityScores: {
-        strength: 99,
-        dexterity: 16,
-        constitution: 14,
-        intelligence: 10,
-        wisdom: 13,
-        charisma: 8,
+      skills: {
+        physique: 99,
+        wits: 2,
+        charm: 1,
+        senses: 0,
       },
     });
     expect(result.success).toBe(false);
@@ -42,14 +36,14 @@ describe("RealtimeEvent", () => {
       type: "dice_roll",
       campaignId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       characterId: "3fa85f64-5717-4562-b3fc-2c963f66afa7",
-      notation: "1d20+5",
-      result: 18,
+      notation: "2d6+3",
+      result: 9,
       rolledAt: new Date().toISOString(),
     });
 
     expect(event.type).toBe("dice_roll");
     if (event.type === "dice_roll") {
-      expect(event.notation).toBe("1d20+5");
+      expect(event.notation).toBe("2d6+3");
     }
   });
 });
