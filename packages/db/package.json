@@ -14,8 +14,8 @@
     }
   },
   "scripts": {
-    "build": "prisma generate && tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "prisma generate && tsup src/index.ts --format esm,cjs --dts --clean --external dotenv",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch --external dotenv",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
@@ -26,12 +26,12 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "dotenv": "^17.4.2",
     "pg": "^8.22.0"
   },
   "devDependencies": {
     "@tmrpg/config": "workspace:*",
     "@types/pg": "^8.20.4",
-    "dotenv": "^17.4.2",
     "prisma": "^7.9.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
