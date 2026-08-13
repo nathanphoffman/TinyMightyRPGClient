@@ -135,6 +135,11 @@ export default function CharacterPage() {
                     {power.description && (
                       <p className="text-xs text-muted-foreground">{power.description}</p>
                     )}
+                    {power.restriction && (
+                      <p className="mt-1 text-xs italic text-muted-foreground">
+                        Restriction: {power.restriction} — may reroll a single die (GM approval).
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

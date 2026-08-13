@@ -49,6 +49,7 @@ export class CharactersService {
         description: option.description,
         category: option.category,
         diceType: option.diceType,
+        restriction: option.restriction,
       }));
 
     const row = await this.db.character.create({

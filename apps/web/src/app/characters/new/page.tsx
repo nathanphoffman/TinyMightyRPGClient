@@ -50,6 +50,8 @@ type PowerOptionFormValue = {
   description: string;
   category: PowerCategory;
   diceType: PowerDiceType | "";
+  hasRestriction: boolean;
+  restriction: string;
 };
 
 type CharacterFormValues = {
@@ -81,9 +83,33 @@ export default function NewCharacterPage() {
       },
       backstory: "",
       powerOptions: [
-        { type: "attackBonus", name: "", description: "", category: "nonAttack", diceType: "" },
-        { type: "defenseBonus", name: "", description: "", category: "nonAttack", diceType: "" },
-        { type: "extraPowerUse", name: "", description: "", category: "nonAttack", diceType: "" },
+        {
+          type: "attackBonus",
+          name: "",
+          description: "",
+          category: "nonAttack",
+          diceType: "",
+          hasRestriction: false,
+          restriction: "",
+        },
+        {
+          type: "defenseBonus",
+          name: "",
+          description: "",
+          category: "nonAttack",
+          diceType: "",
+          hasRestriction: false,
+          restriction: "",
+        },
+        {
+          type: "extraPowerUse",
+          name: "",
+          description: "",
+          category: "nonAttack",
+          diceType: "",
+          hasRestriction: false,
+          restriction: "",
+        },
       ],
       inventory: [],
     },
@@ -139,6 +165,11 @@ export default function NewCharacterPage() {
                         category: option.category,
                         ...(option.category !== "nonAttack" && option.diceType
                           ? { diceType: option.diceType }
+                          : {}),
+                        ...(option.category !== "nonAttack" &&
+                        option.hasRestriction &&
+                        option.restriction.trim()
+                          ? { restriction: option.restriction.trim() }
                           : {}),
                       }
                     : { type: option.type },
@@ -312,6 +343,33 @@ export default function NewCharacterPage() {
                                 </Select>
                               )}
                             />
+                          )}
+                          {needsDiceType && (
+                            <div className="flex flex-col gap-2">
+                              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <input
+                                  type="checkbox"
+                                  {...register(`powerOptions.${index}.hasRestriction`)}
+                                />
+                                Add restriction
+                              </label>
+                              {powerOptionValues?.[index]?.hasRestriction && (
+                                <div className="flex flex-col gap-1">
+                                  <Input
+                                    placeholder="e.g. only works in melee"
+                                    className="bg-card"
+                                    {...register(`powerOptions.${index}.restriction`)}
+                                  />
+                                  <p className="text-xs text-muted-foreground">
+                                    Because of this restriction
+                                    {powerOptionValues[index]?.restriction
+                                      ? ` — "${powerOptionValues[index].restriction}"`
+                                      : ""}
+                                    , I can optionally reroll a single die (if the GM approves).
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           )}
                           {!needsDiceType && (
                             <Textarea

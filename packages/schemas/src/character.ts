@@ -54,6 +54,9 @@ export const PowerOptionSelection = z.discriminatedUnion("type", [
     description: z.string().max(300).default(""),
     category: PowerCategory,
     diceType: PowerDiceType.optional(),
+    // "Sometimes damage powers are more restrictive for thematic reasons...
+    // If the GM approves, the player can reroll a single damage die."
+    restriction: z.string().min(1).max(200).optional(),
   }),
   z.object({ type: z.literal("extraPowerUse") }),
 ]);
@@ -65,6 +68,7 @@ export const Power = z.object({
   description: z.string().max(300).default(""),
   category: PowerCategory,
   diceType: PowerDiceType.optional(),
+  restriction: z.string().min(1).max(200).optional(),
 });
 export type Power = z.infer<typeof Power>;
 
