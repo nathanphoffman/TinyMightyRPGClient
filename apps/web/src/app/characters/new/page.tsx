@@ -26,10 +26,30 @@ const POWER_OPTION_TYPES = [
 
 type PowerOptionType = (typeof POWER_OPTION_TYPES)[number]["value"];
 
+const POWER_CATEGORIES = [
+  { value: "attack", label: "Attack" },
+  { value: "heal", label: "Heal" },
+  { value: "nonAttack", label: "Non-Attack" },
+] as const;
+
+type PowerCategory = (typeof POWER_CATEGORIES)[number]["value"];
+
+// Damage Guide: healing "uses the same dice as damage," so attack and
+// heal powers share the same three dice patterns.
+const POWER_DICE_TYPES = [
+  { value: "multiTarget", label: "Multi-Target — 3d6, one die per target" },
+  { value: "directTarget", label: "Direct-Target — 2d6 to one target" },
+  { value: "areaOfEffect", label: "Area of Effect — 1d6, 6s explode" },
+] as const;
+
+type PowerDiceType = (typeof POWER_DICE_TYPES)[number]["value"];
+
 type PowerOptionFormValue = {
   type: PowerOptionType;
   name: string;
   description: string;
+  category: PowerCategory;
+  diceType: PowerDiceType | "";
 };
 
 type CharacterFormValues = {
@@ -61,9 +81,9 @@ export default function NewCharacterPage() {
       },
       backstory: "",
       powerOptions: [
-        { type: "attackBonus", name: "", description: "" },
-        { type: "attackBonus", name: "", description: "" },
-        { type: "attackBonus", name: "", description: "" },
+        { type: "attackBonus", name: "", description: "", category: "nonAttack", diceType: "" },
+        { type: "defenseBonus", name: "", description: "", category: "nonAttack", diceType: "" },
+        { type: "extraPowerUse", name: "", description: "", category: "nonAttack", diceType: "" },
       ],
       inventory: [],
     },
@@ -112,7 +132,15 @@ export default function NewCharacterPage() {
                 ...values,
                 powerOptions: values.powerOptions.map((option) =>
                   option.type === "specialPower"
-                    ? { type: option.type, name: option.name, description: option.description }
+                    ? {
+                        type: option.type,
+                        name: option.name,
+                        description: option.description,
+                        category: option.category,
+                        ...(option.category !== "nonAttack" && option.diceType
+                          ? { diceType: option.diceType }
+                          : {}),
+                      }
                     : { type: option.type },
                 ),
               } as CreateCharacterInput),
@@ -202,6 +230,9 @@ export default function NewCharacterPage() {
               <div className="flex flex-col gap-3">
                 {([0, 1, 2] as const).map((index) => {
                   const selectedType = powerOptionValues?.[index]?.type;
+                  const selectedCategory = powerOptionValues?.[index]?.category;
+                  const needsDiceType =
+                    selectedCategory === "attack" || selectedCategory === "heal";
                   return (
                     <div
                       key={index}
@@ -245,11 +276,50 @@ export default function NewCharacterPage() {
                             className="bg-card"
                             {...register(`powerOptions.${index}.name`)}
                           />
-                          <Textarea
-                            placeholder="What does it do? (optional)"
-                            className="bg-card"
-                            {...register(`powerOptions.${index}.description`)}
+                          <Controller
+                            control={control}
+                            name={`powerOptions.${index}.category`}
+                            render={({ field }) => (
+                              <Select
+                                className="bg-card"
+                                value={field.value}
+                                onChange={(event) => field.onChange(event.target.value)}
+                              >
+                                {POWER_CATEGORIES.map((category) => (
+                                  <option key={category.value} value={category.value}>
+                                    {category.label}
+                                  </option>
+                                ))}
+                              </Select>
+                            )}
                           />
+                          {needsDiceType && (
+                            <Controller
+                              control={control}
+                              name={`powerOptions.${index}.diceType`}
+                              render={({ field }) => (
+                                <Select
+                                  className="bg-card"
+                                  value={field.value}
+                                  onChange={(event) => field.onChange(event.target.value)}
+                                >
+                                  <option value="">Choose dice…</option>
+                                  {POWER_DICE_TYPES.map((dice) => (
+                                    <option key={dice.value} value={dice.value}>
+                                      {dice.label}
+                                    </option>
+                                  ))}
+                                </Select>
+                              )}
+                            />
+                          )}
+                          {!needsDiceType && (
+                            <Textarea
+                              placeholder="What does it do? (optional)"
+                              className="bg-card"
+                              {...register(`powerOptions.${index}.description`)}
+                            />
+                          )}
                         </div>
                       )}
                     </div>
@@ -258,7 +328,8 @@ export default function NewCharacterPage() {
               </div>
               {hasPowerOptionsError && (
                 <p className="mt-2 text-sm text-destructive">
-                  Check your power option picks — attack bonus and defense bonus have caps.
+                  Check your power option picks — attack/defense bonuses have caps, and attack or
+                  heal powers need a dice type.
                 </p>
               )}
             </div>

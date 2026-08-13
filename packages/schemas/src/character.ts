@@ -33,6 +33,14 @@ export const HitPoints = z.object({
 });
 export type HitPoints = z.infer<typeof HitPoints>;
 
+// Powers doing damage or healing roll one of the three dice patterns from
+// the rules' Damage Guide; healing "uses the same dice as damage."
+export const PowerDiceType = z.enum(["multiTarget", "directTarget", "areaOfEffect"]);
+export type PowerDiceType = z.infer<typeof PowerDiceType>;
+
+export const PowerCategory = z.enum(["attack", "heal", "nonAttack"]);
+export type PowerCategory = z.infer<typeof PowerCategory>;
+
 // Character creation step 3: "Choose 3 of these options, the same option
 // can be picked multiple times, unless noted." Attack bonus tops out at
 // +4 (two picks) and defense at 7 (one pick, since a single +2 already
@@ -44,6 +52,8 @@ export const PowerOptionSelection = z.discriminatedUnion("type", [
     type: z.literal("specialPower"),
     name: z.string().min(1).max(80),
     description: z.string().max(300).default(""),
+    category: PowerCategory,
+    diceType: PowerDiceType.optional(),
   }),
   z.object({ type: z.literal("extraPowerUse") }),
 ]);
@@ -53,6 +63,8 @@ export const Power = z.object({
   id: z.uuid(),
   name: z.string().min(1).max(80),
   description: z.string().max(300).default(""),
+  category: PowerCategory,
+  diceType: PowerDiceType.optional(),
 });
 export type Power = z.infer<typeof Power>;
 
@@ -96,6 +108,19 @@ export const CreateCharacterInput = z.object({
           message: "Defense bonus can only be picked once (max 7)",
         });
       }
+      options.forEach((option, index) => {
+        if (
+          option.type === "specialPower" &&
+          (option.category === "attack" || option.category === "heal") &&
+          !option.diceType
+        ) {
+          ctx.addIssue({
+            code: "custom",
+            message: "Choose a dice type for attack or heal powers",
+            path: [index, "diceType"],
+          });
+        }
+      });
     }),
   inventory: z.array(NewInventoryItem).default([]),
 });

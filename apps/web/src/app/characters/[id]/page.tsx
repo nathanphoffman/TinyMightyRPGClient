@@ -8,6 +8,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
+const POWER_CATEGORY_LABELS: Record<string, string> = {
+  attack: "Attack",
+  heal: "Heal",
+  nonAttack: "Non-Attack",
+};
+
+const POWER_DICE_LABELS: Record<string, string> = {
+  multiTarget: "Multi-Target (3d6)",
+  directTarget: "Direct-Target (2d6)",
+  areaOfEffect: "Area of Effect (1d6)",
+};
+
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -113,7 +125,13 @@ export default function CharacterPage() {
               <div className="flex flex-col gap-2">
                 {character.powers.map((power) => (
                   <div key={power.id} className="rounded-lg border border-border p-2 text-sm">
-                    <p className="font-medium">{power.name}</p>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{power.name}</p>
+                      <span className="text-xs text-muted-foreground">
+                        {POWER_CATEGORY_LABELS[power.category]}
+                        {power.diceType && ` · ${POWER_DICE_LABELS[power.diceType]}`}
+                      </span>
+                    </div>
                     {power.description && (
                       <p className="text-xs text-muted-foreground">{power.description}</p>
                     )}

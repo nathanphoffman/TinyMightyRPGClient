@@ -6,7 +6,7 @@ describe("CreateCharacterInput", () => {
   const validPowerOptions = [
     { type: "attackBonus" },
     { type: "defenseBonus" },
-    { type: "specialPower", name: "Holy Fire" },
+    { type: "specialPower", name: "Holy Fire", category: "nonAttack" },
   ];
 
   it("accepts a valid character payload", () => {
@@ -69,8 +69,47 @@ describe("CreateCharacterInput", () => {
       name: "Elowen",
       skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
       powerOptions: [
-        { type: "specialPower", name: "Fireball" },
-        { type: "specialPower", name: "Ice Lance" },
+        { type: "specialPower", name: "Fireball", category: "attack", diceType: "areaOfEffect" },
+        { type: "specialPower", name: "Ice Lance", category: "attack", diceType: "directTarget" },
+        { type: "extraPowerUse" },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an attack power with no dice type", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [
+        { type: "specialPower", name: "Fireball", category: "attack" },
+        { type: "defenseBonus" },
+        { type: "extraPowerUse" },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects a heal power with no dice type", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [
+        { type: "specialPower", name: "Mend", category: "heal" },
+        { type: "defenseBonus" },
+        { type: "extraPowerUse" },
+      ],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("allows a non-attack power with no dice type", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [
+        { type: "specialPower", name: "Fly", category: "nonAttack" },
+        { type: "defenseBonus" },
         { type: "extraPowerUse" },
       ],
     });

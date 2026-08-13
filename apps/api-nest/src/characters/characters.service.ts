@@ -47,6 +47,8 @@ export class CharactersService {
         id: crypto.randomUUID(),
         name: option.name,
         description: option.description,
+        category: option.category,
+        diceType: option.diceType,
       }));
 
     const row = await this.db.character.create({
