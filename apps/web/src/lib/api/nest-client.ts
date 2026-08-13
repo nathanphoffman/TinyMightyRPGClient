@@ -1,4 +1,10 @@
-import type { Character, CreateCharacterInput, CreateUserInput, LoginInput } from "@tmrpg/schemas";
+import type {
+  Character,
+  CreateCharacterInput,
+  CreateUserInput,
+  LoginInput,
+  UpdateCharacterInput,
+} from "@tmrpg/schemas";
 import { env } from "../env";
 
 async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
@@ -34,6 +40,12 @@ export const nestApi = {
     }),
   listCharacters: (token: string) => request<Character[]>("/characters", {}, token),
   getCharacter: (id: string, token: string) => request<Character>(`/characters/${id}`, {}, token),
+  updateCharacter: (id: string, input: UpdateCharacterInput, token: string) =>
+    request<Character>(
+      `/characters/${id}`,
+      { method: "PATCH", body: JSON.stringify(input) },
+      token,
+    ),
   createCharacter: (input: CreateCharacterInput, token: string) =>
     request<Character>("/characters", { method: "POST", body: JSON.stringify(input) }, token),
 };

@@ -54,9 +54,14 @@ export default function CharacterPage() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-16">
-      <Link href="/characters" className="text-sm text-muted-foreground hover:underline">
-        ← Back to characters
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link href="/characters" className="text-sm text-muted-foreground hover:underline">
+          ← Back to characters
+        </Link>
+        <Button asChild size="sm" variant="outline">
+          <Link href={`/characters/${character.id}/edit`}>Edit character</Link>
+        </Button>
+      </div>
 
       <Card>
         <CardHeader>
