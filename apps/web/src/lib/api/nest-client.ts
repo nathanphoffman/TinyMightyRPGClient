@@ -33,6 +33,7 @@ export const nestApi = {
       body: JSON.stringify(input),
     }),
   listCharacters: (token: string) => request<Character[]>("/characters", {}, token),
+  getCharacter: (id: string, token: string) => request<Character>(`/characters/${id}`, {}, token),
   createCharacter: (input: CreateCharacterInput, token: string) =>
     request<Character>("/characters", { method: "POST", body: JSON.stringify(input) }, token),
 };

@@ -40,16 +40,18 @@ export default function CharactersPage() {
 
       <div className="flex flex-col gap-3">
         {characters?.map((character) => (
-          <Card key={character.id}>
-            <CardHeader>
-              <CardTitle>
-                {character.name} — Level {character.level}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm text-muted-foreground">
-              HP {character.hitPoints.current}/{character.hitPoints.max}
-            </CardContent>
-          </Card>
+          <Link key={character.id} href={`/characters/${character.id}`}>
+            <Card className="transition-colors hover:bg-muted">
+              <CardHeader>
+                <CardTitle>
+                  {character.name} — Level {character.level}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-sm text-muted-foreground">
+                HP {character.hitPoints.current}/{character.hitPoints.max}
+              </CardContent>
+            </Card>
+          </Link>
         ))}
         {characters?.length === 0 && (
           <p className="text-muted-foreground">No characters yet — create your first one.</p>
