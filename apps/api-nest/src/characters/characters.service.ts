@@ -27,14 +27,23 @@ export class CharactersService {
   }
 
   async create(userId: string, input: CreateCharacterInput) {
+    const inventory = input.inventory.map((item) => ({
+      id: crypto.randomUUID(),
+      name: item.name,
+      quantity: item.quantity,
+      weight: 0,
+      equipped: false,
+    }));
+
     const row = await this.db.character.create({
       data: {
         name: input.name,
         ownerId: userId,
         ...input.skills,
+        backstory: input.backstory,
         hpCurrent: STARTING_HEALTH,
         hpMax: STARTING_HEALTH,
-        inventory: [],
+        inventory,
       },
     });
     return toDomainCharacter(row);

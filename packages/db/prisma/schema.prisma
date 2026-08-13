@@ -29,6 +29,8 @@ model Character {
   charm        Int
   senses       Int
 
+  backstory    String   @default("")
+
   hpCurrent    Int
   hpMax        Int
 

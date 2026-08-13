@@ -13,6 +13,7 @@ describe("toDomainCharacter", () => {
       wits: 2,
       charm: 1,
       senses: 0,
+      backstory: "",
       hpCurrent: 15,
       hpMax: 15,
       inventory: [],

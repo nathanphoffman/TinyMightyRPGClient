@@ -21,6 +21,12 @@ export const InventoryItem = z.object({
 });
 export type InventoryItem = z.infer<typeof InventoryItem>;
 
+export const NewInventoryItem = z.object({
+  name: z.string().min(1).max(80),
+  quantity: z.number().int().min(1).default(1),
+});
+export type NewInventoryItem = z.infer<typeof NewInventoryItem>;
+
 export const HitPoints = z.object({
   current: z.number().int().min(0),
   max: z.number().int().min(1),
@@ -33,6 +39,7 @@ export const CharacterSchema = z.object({
   name: z.string().min(1).max(60),
   level: z.number().int().min(1).max(20).default(1),
   skills: Skills,
+  backstory: z.string().max(2000).default(""),
   hitPoints: HitPoints,
   inventory: z.array(InventoryItem).default([]),
   createdAt: z.coerce.date(),
@@ -43,12 +50,15 @@ export type Character = z.infer<typeof CharacterSchema>;
 export const CreateCharacterInput = z.object({
   name: z.string().min(1).max(60),
   skills: Skills,
+  backstory: z.string().max(2000).default(""),
+  inventory: z.array(NewInventoryItem).default([]),
 });
 export type CreateCharacterInput = z.infer<typeof CreateCharacterInput>;
 
 export const UpdateCharacterInput = z.object({
   name: z.string().min(1).max(60).optional(),
   level: z.number().int().min(1).max(20).optional(),
+  backstory: z.string().max(2000).optional(),
   hitPoints: HitPoints.partial().optional(),
   inventory: z.array(InventoryItem).optional(),
 });

@@ -16,6 +16,7 @@ export function toDomainCharacter(row: PrismaCharacter): Character {
       charm: row.charm,
       senses: row.senses,
     },
+    backstory: row.backstory,
     hitPoints: { current: row.hpCurrent, max: row.hpMax },
     inventory: row.inventory as InventoryItem[],
     createdAt: row.createdAt,

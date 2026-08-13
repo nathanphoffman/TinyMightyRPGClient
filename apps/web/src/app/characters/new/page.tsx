@@ -2,14 +2,16 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { CreateCharacterInput, SkillName } from "@tmrpg/schemas";
+import { CreateCharacterInput, type NewInventoryItem, SkillName } from "@tmrpg/schemas";
+import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
@@ -18,6 +20,8 @@ const SCORE_OPTIONS = [0, 1, 2, 3] as const;
 type CharacterFormValues = {
   name: string;
   skills: Record<SkillName, number | undefined>;
+  backstory: string;
+  inventory: NewInventoryItem[];
 };
 
 export default function NewCharacterPage() {
@@ -39,6 +43,8 @@ export default function NewCharacterPage() {
         charm: undefined,
         senses: undefined,
       },
+      backstory: "",
+      inventory: [],
     },
   });
 
@@ -46,6 +52,8 @@ export default function NewCharacterPage() {
   const assignedScores = Object.values(skillValues ?? {}).filter(
     (value): value is number => value !== undefined,
   );
+
+  const inventoryFields = useFieldArray({ control, name: "inventory" });
 
   const createCharacter = useMutation({
     mutationFn: (input: CreateCharacterInput) =>
@@ -134,6 +142,58 @@ export default function NewCharacterPage() {
                   Assign a bonus to every skill before creating your character.
                 </p>
               )}
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="backstory">Backstory</Label>
+              <Textarea
+                id="backstory"
+                placeholder="Where did your character come from?"
+                {...register("backstory")}
+              />
+            </div>
+
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-sm font-medium">Starting items</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => inventoryFields.append({ name: "", quantity: 1 })}
+                >
+                  Add item
+                </Button>
+              </div>
+              <div className="flex flex-col gap-2">
+                {inventoryFields.fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Item name"
+                      className="flex-1"
+                      {...register(`inventory.${index}.name`)}
+                    />
+                    <Input
+                      type="number"
+                      min={1}
+                      className="w-20"
+                      {...register(`inventory.${index}.quantity`, { valueAsNumber: true })}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      aria-label="Remove item"
+                      onClick={() => inventoryFields.remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+                {inventoryFields.fields.length === 0 && (
+                  <p className="text-sm text-muted-foreground">No starting items yet.</p>
+                )}
+              </div>
             </div>
 
             {createCharacter.isError && (
