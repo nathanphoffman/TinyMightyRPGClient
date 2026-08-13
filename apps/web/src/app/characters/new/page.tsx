@@ -44,6 +44,12 @@ const POWER_DICE_TYPES = [
 
 type PowerDiceType = (typeof POWER_DICE_TYPES)[number]["value"];
 
+const POWER_NAME_PLACEHOLDERS: Record<PowerCategory, string> = {
+  attack: "Power name (eg. Holy Fire Blade)",
+  heal: "Power name (eg. Healing Touch)",
+  nonAttack: "Power name (eg. Sticky Climb)",
+};
+
 type PowerOptionFormValue = {
   type: PowerOptionType;
   name: string;
@@ -348,7 +354,7 @@ export default function NewCharacterPage() {
                       {selectedType === "specialPower" && (
                         <div className="flex flex-col gap-2">
                           <Input
-                            placeholder="Power name (eg. Holy Fire Blade)"
+                            placeholder={POWER_NAME_PLACEHOLDERS[selectedCategory ?? "nonAttack"]}
                             className="bg-card"
                             {...register(`powerOptions.${index}.name`)}
                           />
