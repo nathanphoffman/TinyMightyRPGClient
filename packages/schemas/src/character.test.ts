@@ -71,7 +71,7 @@ describe("CreateCharacterInput", () => {
       powerOptions: [
         { type: "specialPower", name: "Fireball", category: "attack", diceType: "areaOfEffect" },
         { type: "specialPower", name: "Ice Lance", category: "attack", diceType: "directTarget" },
-        { type: "extraPowerUse" },
+        { type: "extraPowerUse", targetPowerName: "Fireball" },
       ],
     });
     expect(result.success).toBe(true);
@@ -110,10 +110,23 @@ describe("CreateCharacterInput", () => {
       powerOptions: [
         { type: "specialPower", name: "Fly", category: "nonAttack" },
         { type: "defenseBonus" },
-        { type: "extraPowerUse" },
+        { type: "extraPowerUse", targetPowerName: "Fly" },
       ],
     });
     expect(result.success).toBe(true);
+  });
+
+  it("rejects an extra power use that targets an unknown power", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [
+        { type: "specialPower", name: "Fly", category: "nonAttack" },
+        { type: "defenseBonus" },
+        { type: "extraPowerUse", targetPowerName: "Nonexistent Power" },
+      ],
+    });
+    expect(result.success).toBe(false);
   });
 });
 

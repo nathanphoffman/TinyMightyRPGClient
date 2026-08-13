@@ -36,7 +36,6 @@ model Character {
 
   attackBonus    Int    @default(0)
   defense        Int    @default(5)
-  bonusPowerUses Int    @default(0)
 
   // Flexible list of items; kept as JSON rather than a separate table
   // since inventory shape is still evolving and always loaded/saved as a whole.

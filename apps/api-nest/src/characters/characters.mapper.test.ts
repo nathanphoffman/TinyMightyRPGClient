@@ -18,7 +18,6 @@ describe("toDomainCharacter", () => {
       hpMax: 15,
       attackBonus: 2,
       defense: 7,
-      bonusPowerUses: 1,
       powers: [],
       inventory: [],
       createdAt: now,

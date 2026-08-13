@@ -88,11 +88,6 @@ export default function CharacterPage() {
             </span>
             <span>Attack +{character.attackBonus}</span>
             <span>Defense {character.defense}</span>
-            {character.bonusPowerUses > 0 && (
-              <span>
-                +{character.bonusPowerUses} power use{character.bonusPowerUses > 1 ? "s" : ""}
-              </span>
-            )}
           </div>
 
           <div>
@@ -130,6 +125,7 @@ export default function CharacterPage() {
                       <span className="text-xs text-muted-foreground">
                         {POWER_CATEGORY_LABELS[power.category]}
                         {power.diceType && ` · ${POWER_DICE_LABELS[power.diceType]}`}
+                        {` · ${power.usesUsed}/${power.usesMax} uses`}
                       </span>
                     </div>
                     {power.description && (

@@ -52,6 +52,7 @@ type PowerOptionFormValue = {
   diceType: PowerDiceType | "";
   hasRestriction: boolean;
   restriction: string;
+  targetPowerName: string;
 };
 
 type CharacterFormValues = {
@@ -91,6 +92,17 @@ export default function NewCharacterPage() {
           diceType: "",
           hasRestriction: false,
           restriction: "",
+          targetPowerName: "",
+        },
+        {
+          type: "attackBonus",
+          name: "",
+          description: "",
+          category: "nonAttack",
+          diceType: "",
+          hasRestriction: false,
+          restriction: "",
+          targetPowerName: "",
         },
         {
           type: "defenseBonus",
@@ -100,15 +112,7 @@ export default function NewCharacterPage() {
           diceType: "",
           hasRestriction: false,
           restriction: "",
-        },
-        {
-          type: "extraPowerUse",
-          name: "",
-          description: "",
-          category: "nonAttack",
-          diceType: "",
-          hasRestriction: false,
-          restriction: "",
+          targetPowerName: "",
         },
       ],
       inventory: [],
@@ -156,24 +160,28 @@ export default function NewCharacterPage() {
             onSubmit={handleSubmit((values) =>
               createCharacter.mutate({
                 ...values,
-                powerOptions: values.powerOptions.map((option) =>
-                  option.type === "specialPower"
-                    ? {
-                        type: option.type,
-                        name: option.name,
-                        description: option.description,
-                        category: option.category,
-                        ...(option.category !== "nonAttack" && option.diceType
-                          ? { diceType: option.diceType }
-                          : {}),
-                        ...(option.category !== "nonAttack" &&
-                        option.hasRestriction &&
-                        option.restriction.trim()
-                          ? { restriction: option.restriction.trim() }
-                          : {}),
-                      }
-                    : { type: option.type },
-                ),
+                powerOptions: values.powerOptions.map((option) => {
+                  if (option.type === "specialPower") {
+                    return {
+                      type: option.type,
+                      name: option.name,
+                      description: option.description,
+                      category: option.category,
+                      ...(option.category !== "nonAttack" && option.diceType
+                        ? { diceType: option.diceType }
+                        : {}),
+                      ...(option.category !== "nonAttack" &&
+                      option.hasRestriction &&
+                      option.restriction.trim()
+                        ? { restriction: option.restriction.trim() }
+                        : {}),
+                    };
+                  }
+                  if (option.type === "extraPowerUse") {
+                    return { type: option.type, targetPowerName: option.targetPowerName };
+                  }
+                  return { type: option.type };
+                }),
               } as CreateCharacterInput),
             )}
           >
@@ -264,6 +272,13 @@ export default function NewCharacterPage() {
                   const selectedCategory = powerOptionValues?.[index]?.category;
                   const needsDiceType =
                     selectedCategory === "attack" || selectedCategory === "heal";
+                  const availablePowerNames = [
+                    ...new Set(
+                      (powerOptionValues ?? [])
+                        .filter((o, i) => i !== index && o.type === "specialPower" && o.name.trim())
+                        .map((o) => o.name.trim()),
+                    ),
+                  ];
                   return (
                     <div
                       key={index}
@@ -287,11 +302,17 @@ export default function NewCharacterPage() {
                                 option.value === "defenseBonus" &&
                                 selectedType !== "defenseBonus" &&
                                 defenseBonusPicks >= 1;
+                              const isExtraPowerUseBlocked =
+                                option.value === "extraPowerUse" &&
+                                selectedType !== "extraPowerUse" &&
+                                availablePowerNames.length === 0;
                               return (
                                 <option
                                   key={option.value}
                                   value={option.value}
-                                  disabled={isAttackCapped || isDefenseCapped}
+                                  disabled={
+                                    isAttackCapped || isDefenseCapped || isExtraPowerUseBlocked
+                                  }
                                 >
                                   {option.label}
                                 </option>
@@ -300,6 +321,30 @@ export default function NewCharacterPage() {
                           </Select>
                         )}
                       />
+                      {selectedType === "extraPowerUse" && (
+                        <Controller
+                          control={control}
+                          name={`powerOptions.${index}.targetPowerName`}
+                          render={({ field }) => (
+                            <Select
+                              className="bg-card"
+                              value={field.value}
+                              onChange={(event) => field.onChange(event.target.value)}
+                            >
+                              <option value="">
+                                {availablePowerNames.length === 0
+                                  ? "Name a special power in another slot first"
+                                  : "Which power gets the extra use?"}
+                              </option>
+                              {availablePowerNames.map((name) => (
+                                <option key={name} value={name}>
+                                  {name}
+                                </option>
+                              ))}
+                            </Select>
+                          )}
+                        />
+                      )}
                       {selectedType === "specialPower" && (
                         <div className="flex flex-col gap-2">
                           <Input

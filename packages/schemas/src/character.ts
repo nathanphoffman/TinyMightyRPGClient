@@ -58,7 +58,13 @@ export const PowerOptionSelection = z.discriminatedUnion("type", [
     // If the GM approves, the player can reroll a single damage die."
     restriction: z.string().min(1).max(200).optional(),
   }),
-  z.object({ type: z.literal("extraPowerUse") }),
+  z.object({
+    type: z.literal("extraPowerUse"),
+    // "+1 more 'power use' (outline a checkbox)" — the extra use is a
+    // checkbox on one specific power, so it must name a power already
+    // picked elsewhere among the 3 selections.
+    targetPowerName: z.string().min(1).max(80),
+  }),
 ]);
 export type PowerOptionSelection = z.infer<typeof PowerOptionSelection>;
 
@@ -69,6 +75,11 @@ export const Power = z.object({
   category: PowerCategory,
   diceType: PowerDiceType.optional(),
   restriction: z.string().min(1).max(200).optional(),
+  // Base is "a one use (per rest) special power"; each "+1 more power
+  // use" pick targeting this power raises usesMax by 1. usesUsed resets
+  // to 0 on rest ("readying powers").
+  usesMax: z.number().int().min(1).default(1),
+  usesUsed: z.number().int().min(0).default(0),
 });
 export type Power = z.infer<typeof Power>;
 
@@ -83,7 +94,6 @@ export const CharacterSchema = z.object({
   attackBonus: z.number().int().min(0).max(4).default(0),
   defense: z.number().int().min(5).max(7).default(5),
   powers: z.array(Power).default([]),
-  bonusPowerUses: z.number().int().min(0).default(0),
   inventory: z.array(InventoryItem).default([]),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -123,6 +133,18 @@ export const CreateCharacterInput = z.object({
             message: "Choose a dice type for attack or heal powers",
             path: [index, "diceType"],
           });
+        }
+        if (option.type === "extraPowerUse") {
+          const targetsKnownPower = options.some(
+            (other) => other.type === "specialPower" && other.name === option.targetPowerName,
+          );
+          if (!targetsKnownPower) {
+            ctx.addIssue({
+              code: "custom",
+              message: "Select a power you've already specified",
+              path: [index, "targetPowerName"],
+            });
+          }
         }
       });
     }),

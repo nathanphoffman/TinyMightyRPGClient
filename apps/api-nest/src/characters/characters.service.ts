@@ -38,9 +38,6 @@ export class CharactersService {
     const attackBonus =
       input.powerOptions.filter((option) => option.type === "attackBonus").length * 2;
     const defense = input.powerOptions.some((option) => option.type === "defenseBonus") ? 7 : 5;
-    const bonusPowerUses = input.powerOptions.filter(
-      (option) => option.type === "extraPowerUse",
-    ).length;
     const powers = input.powerOptions
       .filter((option) => option.type === "specialPower")
       .map((option) => ({
@@ -50,6 +47,12 @@ export class CharactersService {
         category: option.category,
         diceType: option.diceType,
         restriction: option.restriction,
+        usesMax:
+          1 +
+          input.powerOptions.filter(
+            (other) => other.type === "extraPowerUse" && other.targetPowerName === option.name,
+          ).length,
+        usesUsed: 0,
       }));
 
     const row = await this.db.character.create({
@@ -62,7 +65,6 @@ export class CharactersService {
         hpMax: STARTING_HEALTH,
         attackBonus,
         defense,
-        bonusPowerUses,
         powers,
         inventory,
       },

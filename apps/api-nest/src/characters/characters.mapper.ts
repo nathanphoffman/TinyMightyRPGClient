@@ -21,7 +21,6 @@ export function toDomainCharacter(row: PrismaCharacter): Character {
     attackBonus: row.attackBonus,
     defense: row.defense,
     powers: row.powers as Power[],
-    bonusPowerUses: row.bonusPowerUses,
     inventory: row.inventory as InventoryItem[],
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
