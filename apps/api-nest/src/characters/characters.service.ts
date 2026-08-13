@@ -35,6 +35,20 @@ export class CharactersService {
       equipped: false,
     }));
 
+    const attackBonus =
+      input.powerOptions.filter((option) => option.type === "attackBonus").length * 2;
+    const defense = input.powerOptions.some((option) => option.type === "defenseBonus") ? 7 : 5;
+    const bonusPowerUses = input.powerOptions.filter(
+      (option) => option.type === "extraPowerUse",
+    ).length;
+    const powers = input.powerOptions
+      .filter((option) => option.type === "specialPower")
+      .map((option) => ({
+        id: crypto.randomUUID(),
+        name: option.name,
+        description: option.description,
+      }));
+
     const row = await this.db.character.create({
       data: {
         name: input.name,
@@ -43,6 +57,10 @@ export class CharactersService {
         backstory: input.backstory,
         hpCurrent: STARTING_HEALTH,
         hpMax: STARTING_HEALTH,
+        attackBonus,
+        defense,
+        bonusPowerUses,
+        powers,
         inventory,
       },
     });

@@ -70,8 +70,17 @@ export default function CharacterPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
-          <div className="text-sm text-muted-foreground">
-            HP {character.hitPoints.current}/{character.hitPoints.max}
+          <div className="flex gap-4 text-sm text-muted-foreground">
+            <span>
+              HP {character.hitPoints.current}/{character.hitPoints.max}
+            </span>
+            <span>Attack +{character.attackBonus}</span>
+            <span>Defense {character.defense}</span>
+            {character.bonusPowerUses > 0 && (
+              <span>
+                +{character.bonusPowerUses} power use{character.bonusPowerUses > 1 ? "s" : ""}
+              </span>
+            )}
           </div>
 
           <div>
@@ -95,6 +104,22 @@ export default function CharacterPage() {
               <p className="whitespace-pre-wrap text-sm text-muted-foreground">
                 {character.backstory}
               </p>
+            </div>
+          )}
+
+          {character.powers.length > 0 && (
+            <div>
+              <p className="mb-2 text-sm font-medium">Powers</p>
+              <div className="flex flex-col gap-2">
+                {character.powers.map((power) => (
+                  <div key={power.id} className="rounded-lg border border-border p-2 text-sm">
+                    <p className="font-medium">{power.name}</p>
+                    {power.description && (
+                      <p className="text-xs text-muted-foreground">{power.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

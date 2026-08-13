@@ -17,10 +17,26 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 
 const SCORE_OPTIONS = [0, 1, 2, 3] as const;
 
+const POWER_OPTION_TYPES = [
+  { value: "attackBonus", label: "+2 attack bonus (max +4)" },
+  { value: "defenseBonus", label: "+2 defense (max 7)" },
+  { value: "specialPower", label: "A one-use special power" },
+  { value: "extraPowerUse", label: "+1 more power use" },
+] as const;
+
+type PowerOptionType = (typeof POWER_OPTION_TYPES)[number]["value"];
+
+type PowerOptionFormValue = {
+  type: PowerOptionType;
+  name: string;
+  description: string;
+};
+
 type CharacterFormValues = {
   name: string;
   skills: Record<SkillName, number | undefined>;
   backstory: string;
+  powerOptions: [PowerOptionFormValue, PowerOptionFormValue, PowerOptionFormValue];
   inventory: NewInventoryItem[];
 };
 
@@ -44,6 +60,11 @@ export default function NewCharacterPage() {
         senses: undefined,
       },
       backstory: "",
+      powerOptions: [
+        { type: "attackBonus", name: "", description: "" },
+        { type: "attackBonus", name: "", description: "" },
+        { type: "attackBonus", name: "", description: "" },
+      ],
       inventory: [],
     },
   });
@@ -52,6 +73,11 @@ export default function NewCharacterPage() {
   const assignedScores = Object.values(skillValues ?? {}).filter(
     (value): value is number => value !== undefined,
   );
+
+  const powerOptionValues = useWatch({ control, name: "powerOptions" });
+  const attackBonusPicks = powerOptionValues?.filter((o) => o.type === "attackBonus").length ?? 0;
+  const defenseBonusPicks = powerOptionValues?.filter((o) => o.type === "defenseBonus").length ?? 0;
+  const specialPowerPicks = powerOptionValues?.filter((o) => o.type === "specialPower").length ?? 0;
 
   const inventoryFields = useFieldArray({ control, name: "inventory" });
 
@@ -62,6 +88,7 @@ export default function NewCharacterPage() {
   });
 
   const hasSkillsError = Boolean(errors.skills);
+  const hasPowerOptionsError = Boolean(errors.powerOptions);
 
   if (!accessToken) {
     return (
@@ -81,7 +108,14 @@ export default function NewCharacterPage() {
           <form
             className="flex flex-col gap-5"
             onSubmit={handleSubmit((values) =>
-              createCharacter.mutate(values as CreateCharacterInput),
+              createCharacter.mutate({
+                ...values,
+                powerOptions: values.powerOptions.map((option) =>
+                  option.type === "specialPower"
+                    ? { type: option.type, name: option.name, description: option.description }
+                    : { type: option.type },
+                ),
+              } as CreateCharacterInput),
             )}
           >
             <div className="flex flex-col gap-1.5">
@@ -140,6 +174,91 @@ export default function NewCharacterPage() {
               {hasSkillsError && (
                 <p className="mt-2 text-sm text-destructive">
                   Assign a bonus to every skill before creating your character.
+                </p>
+              )}
+            </div>
+
+            <div className="grid grid-cols-3 gap-3">
+              <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted p-2 text-center">
+                <span className="text-xs text-muted-foreground">Attack bonus</span>
+                <span className="text-lg font-semibold">+{attackBonusPicks * 2}</span>
+              </div>
+              <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted p-2 text-center">
+                <span className="text-xs text-muted-foreground">Defense</span>
+                <span className="text-lg font-semibold">{defenseBonusPicks > 0 ? 7 : 5}</span>
+              </div>
+              <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted p-2 text-center">
+                <span className="text-xs text-muted-foreground">Powers</span>
+                <span className="text-lg font-semibold">{specialPowerPicks}</span>
+              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 text-sm font-medium">Power options</p>
+              <p className="mb-2 text-xs text-muted-foreground">
+                Choose 3 (repeats allowed): +2 attack (max +4 total), +2 defense (max 7 total), a
+                one-use special power, or +1 more power use.
+              </p>
+              <div className="flex flex-col gap-3">
+                {([0, 1, 2] as const).map((index) => {
+                  const selectedType = powerOptionValues?.[index]?.type;
+                  return (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-2 rounded-lg border border-border bg-muted p-3"
+                    >
+                      <Controller
+                        control={control}
+                        name={`powerOptions.${index}.type`}
+                        render={({ field }) => (
+                          <Select
+                            className="bg-card"
+                            value={field.value}
+                            onChange={(event) => field.onChange(event.target.value)}
+                          >
+                            {POWER_OPTION_TYPES.map((option) => {
+                              const isAttackCapped =
+                                option.value === "attackBonus" &&
+                                selectedType !== "attackBonus" &&
+                                attackBonusPicks >= 2;
+                              const isDefenseCapped =
+                                option.value === "defenseBonus" &&
+                                selectedType !== "defenseBonus" &&
+                                defenseBonusPicks >= 1;
+                              return (
+                                <option
+                                  key={option.value}
+                                  value={option.value}
+                                  disabled={isAttackCapped || isDefenseCapped}
+                                >
+                                  {option.label}
+                                </option>
+                              );
+                            })}
+                          </Select>
+                        )}
+                      />
+                      {selectedType === "specialPower" && (
+                        <div className="flex flex-col gap-2">
+                          <Input
+                            placeholder="Power name (eg. Holy Fire Blade)"
+                            className="bg-card"
+                            {...register(`powerOptions.${index}.name`)}
+                          />
+                          <Textarea
+                            placeholder="What does it do? (optional)"
+                            className="bg-card"
+                            {...register(`powerOptions.${index}.description`)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {hasPowerOptionsError && (
+                <p className="mt-2 text-sm text-destructive">
+                  Check your power option picks — attack bonus and defense bonus have caps.
                 </p>
               )}
             </div>

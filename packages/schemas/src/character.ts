@@ -33,6 +33,29 @@ export const HitPoints = z.object({
 });
 export type HitPoints = z.infer<typeof HitPoints>;
 
+// Character creation step 3: "Choose 3 of these options, the same option
+// can be picked multiple times, unless noted." Attack bonus tops out at
+// +4 (two picks) and defense at 7 (one pick, since a single +2 already
+// hits the cap); special powers and extra power uses are unlimited.
+export const PowerOptionSelection = z.discriminatedUnion("type", [
+  z.object({ type: z.literal("attackBonus") }),
+  z.object({ type: z.literal("defenseBonus") }),
+  z.object({
+    type: z.literal("specialPower"),
+    name: z.string().min(1).max(80),
+    description: z.string().max(300).default(""),
+  }),
+  z.object({ type: z.literal("extraPowerUse") }),
+]);
+export type PowerOptionSelection = z.infer<typeof PowerOptionSelection>;
+
+export const Power = z.object({
+  id: z.uuid(),
+  name: z.string().min(1).max(80),
+  description: z.string().max(300).default(""),
+});
+export type Power = z.infer<typeof Power>;
+
 export const CharacterSchema = z.object({
   id: CharacterId,
   ownerId: UserId,
@@ -41,6 +64,10 @@ export const CharacterSchema = z.object({
   skills: Skills,
   backstory: z.string().max(2000).default(""),
   hitPoints: HitPoints,
+  attackBonus: z.number().int().min(0).max(4).default(0),
+  defense: z.number().int().min(5).max(7).default(5),
+  powers: z.array(Power).default([]),
+  bonusPowerUses: z.number().int().min(0).default(0),
   inventory: z.array(InventoryItem).default([]),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -51,6 +78,25 @@ export const CreateCharacterInput = z.object({
   name: z.string().min(1).max(60),
   skills: Skills,
   backstory: z.string().max(2000).default(""),
+  powerOptions: z
+    .array(PowerOptionSelection)
+    .length(3, "Choose 3 power options")
+    .superRefine((options, ctx) => {
+      const attackPicks = options.filter((option) => option.type === "attackBonus").length;
+      const defensePicks = options.filter((option) => option.type === "defenseBonus").length;
+      if (attackPicks > 2) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Attack bonus can only be picked twice (max +4)",
+        });
+      }
+      if (defensePicks > 1) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Defense bonus can only be picked once (max 7)",
+        });
+      }
+    }),
   inventory: z.array(NewInventoryItem).default([]),
 });
 export type CreateCharacterInput = z.infer<typeof CreateCharacterInput>;

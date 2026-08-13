@@ -3,6 +3,12 @@ import { CreateCharacterInput } from "./character.js";
 import { RealtimeEvent } from "./realtime-events.js";
 
 describe("CreateCharacterInput", () => {
+  const validPowerOptions = [
+    { type: "attackBonus" },
+    { type: "defenseBonus" },
+    { type: "specialPower", name: "Holy Fire" },
+  ];
+
   it("accepts a valid character payload", () => {
     const result = CreateCharacterInput.safeParse({
       name: "Elowen",
@@ -12,6 +18,7 @@ describe("CreateCharacterInput", () => {
         charm: 1,
         senses: 0,
       },
+      powerOptions: validPowerOptions,
     });
     expect(result.success).toBe(true);
   });
@@ -25,8 +32,49 @@ describe("CreateCharacterInput", () => {
         charm: 1,
         senses: 0,
       },
+      powerOptions: validPowerOptions,
     });
     expect(result.success).toBe(false);
+  });
+
+  it("rejects power options that aren't exactly 3", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [{ type: "attackBonus" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects picking attack bonus more than twice", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [{ type: "attackBonus" }, { type: "attackBonus" }, { type: "attackBonus" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects picking defense bonus more than once", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [{ type: "defenseBonus" }, { type: "defenseBonus" }, { type: "extraPowerUse" }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("allows picking the same special power slot multiple times", () => {
+    const result = CreateCharacterInput.safeParse({
+      name: "Elowen",
+      skills: { physique: 3, wits: 2, charm: 1, senses: 0 },
+      powerOptions: [
+        { type: "specialPower", name: "Fireball" },
+        { type: "specialPower", name: "Ice Lance" },
+        { type: "extraPowerUse" },
+      ],
+    });
+    expect(result.success).toBe(true);
   });
 });
 

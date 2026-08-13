@@ -34,9 +34,15 @@ model Character {
   hpCurrent    Int
   hpMax        Int
 
+  attackBonus    Int    @default(0)
+  defense        Int    @default(5)
+  bonusPowerUses Int    @default(0)
+
   // Flexible list of items; kept as JSON rather than a separate table
   // since inventory shape is still evolving and always loaded/saved as a whole.
   inventory    Json     @default("[]")
+  // Player-invented powers picked during character creation, same rationale as inventory.
+  powers       Json     @default("[]")
 
   ownerId      String
   owner        User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)

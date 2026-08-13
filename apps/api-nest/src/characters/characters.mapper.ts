@@ -1,5 +1,5 @@
 import type { Character as PrismaCharacter } from "@tmrpg/db";
-import type { Character, InventoryItem } from "@tmrpg/schemas";
+import type { Character, InventoryItem, Power } from "@tmrpg/schemas";
 
 // Prisma stores skills as flat columns and inventory as JSON;
 // the domain schema nests skills under `skills`. This
@@ -18,6 +18,10 @@ export function toDomainCharacter(row: PrismaCharacter): Character {
     },
     backstory: row.backstory,
     hitPoints: { current: row.hpCurrent, max: row.hpMax },
+    attackBonus: row.attackBonus,
+    defense: row.defense,
+    powers: row.powers as Power[],
+    bonusPowerUses: row.bonusPowerUses,
     inventory: row.inventory as InventoryItem[],
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,

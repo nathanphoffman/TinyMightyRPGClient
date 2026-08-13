@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "characters" ADD COLUMN     "attackBonus" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "bonusPowerUses" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "defense" INTEGER NOT NULL DEFAULT 5,
+ADD COLUMN     "powers" JSONB NOT NULL DEFAULT '[]';
