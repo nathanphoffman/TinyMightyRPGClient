@@ -65,6 +65,12 @@ export default function LoginPage() {
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">
+              <Link href="/forgot-password" className="underline underline-offset-4">
+                Forgot your password?
+              </Link>
+            </p>
+
+            <p className="text-center text-sm text-muted-foreground">
               Need an account?{" "}
               <Link href="/register" className="underline underline-offset-4">
                 Sign up

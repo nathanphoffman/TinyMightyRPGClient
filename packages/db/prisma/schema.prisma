@@ -13,6 +13,11 @@ model User {
   displayName  String
   createdAt    DateTime @default(now())
 
+  // Only the hash is stored; the raw token goes out in the reset email
+  // and is never persisted, same principle as passwordHash.
+  resetTokenHash      String?
+  resetTokenExpiresAt DateTime?
+
   characters      Character[]
   campaignsRun    Campaign[]  @relation("CampaignGm")
 

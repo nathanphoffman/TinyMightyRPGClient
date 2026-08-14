@@ -21,3 +21,14 @@ export const LoginInput = z.object({
   password: z.string().min(1),
 });
 export type LoginInput = z.infer<typeof LoginInput>;
+
+export const ForgotPasswordInput = z.object({
+  email: z.email(),
+});
+export type ForgotPasswordInput = z.infer<typeof ForgotPasswordInput>;
+
+export const ResetPasswordInput = z.object({
+  token: z.string().min(1),
+  password: z.string().min(8).max(72),
+});
+export type ResetPasswordInput = z.infer<typeof ResetPasswordInput>;
