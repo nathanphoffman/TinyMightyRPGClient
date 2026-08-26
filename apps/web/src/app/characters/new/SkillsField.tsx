@@ -4,6 +4,7 @@ import { SkillName } from "@tmrpg/schemas";
 import { Controller, useWatch } from "react-hook-form";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
+import { FormSection } from "./FormSection";
 import type { CharacterFormControl } from "./types";
 
 const SCORE_OPTIONS = [0, 1, 2, 3] as const;
@@ -21,12 +22,12 @@ export function SkillsField({
   );
 
   return (
-    <div>
-      <p className="mb-2 text-sm font-medium">Skills</p>
-      <p className="mb-2 text-xs text-muted-foreground">
-        Assign +0, +1, +2, and +3 across the four skills — each bonus can only be used once.
-      </p>
-      <div className="grid grid-cols-2 gap-3">
+    <FormSection
+      title="Skills"
+      description="Assign +0, +1, +2, and +3 across the four skills — each bonus can only be used once."
+      error={hasError ? "Assign a bonus to every skill before creating your character." : undefined}
+    >
+      <div className="grid gap-3 sm:grid-cols-2">
         {SkillName.options.map((skill) => {
           const currentValue = skillValues?.[skill];
           const takenByOthers = assignedScores.filter((value) => value !== currentValue);
@@ -36,7 +37,7 @@ export function SkillsField({
               key={skill}
               className="flex flex-col gap-1.5 rounded-lg border border-border bg-muted p-2"
             >
-              <Label htmlFor={skill} className="text-xs capitalize text-muted-foreground">
+              <Label htmlFor={skill} className="text-sm capitalize text-muted-foreground">
                 {skill}
               </Label>
               <Controller
@@ -68,11 +69,6 @@ export function SkillsField({
           );
         })}
       </div>
-      {hasError && (
-        <p className="mt-2 text-sm text-destructive">
-          Assign a bonus to every skill before creating your character.
-        </p>
-      )}
-    </div>
+    </FormSection>
   );
 }

@@ -9,18 +9,49 @@ import type {
 } from "@tmrpg/schemas";
 import { env } from "../env";
 
+/**
+ * `status` is undefined when the request never reached the API at all — the
+ * dev server isn't running, the machine is offline, CORS rejected it. Callers
+ * can tell that apart from a response the API actually sent.
+ */
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    readonly path: string,
+    readonly status?: number,
+    options?: ErrorOptions,
+  ) {
+    super(message, options);
+    this.name = "ApiError";
+  }
+
+  get isNetworkError() {
+    return this.status === undefined;
+  }
+}
+
 async function request<T>(path: string, options: RequestInit = {}, token?: string): Promise<T> {
-  const res = await fetch(`${env.NEXT_PUBLIC_NEST_API_URL}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${env.NEXT_PUBLIC_NEST_API_URL}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options.headers,
+      },
+    });
+  } catch (cause) {
+    throw new ApiError(
+      `Could not reach the API at ${env.NEXT_PUBLIC_NEST_API_URL}${path}`,
+      path,
+      undefined,
+      { cause },
+    );
+  }
 
   if (!res.ok) {
-    throw new Error(`Request to ${path} failed with ${res.status}`);
+    throw new ApiError(`Request to ${path} failed with ${res.status}`, path, res.status);
   }
 
   return res.json() as Promise<T>;

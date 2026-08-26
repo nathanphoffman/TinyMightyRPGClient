@@ -1,5 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 // biome-ignore lint/style/useImportType: constructor-injected provider, needs a runtime reference for Nest's decorator metadata
 import { JwtService } from "@nestjs/jwt";
 import type {
@@ -22,6 +22,8 @@ function hashToken(token: string) {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly users: UsersService,
     private readonly jwt: JwtService,
@@ -59,7 +61,12 @@ export class AuthService {
         new Date(Date.now() + RESET_TOKEN_TTL_MS),
       );
       const resetUrl = `${process.env.APP_WEB_URL ?? "http://localhost:3000"}/reset-password?token=${token}`;
-      await this.mail.sendPasswordResetEmail(user.email, resetUrl);
+      const delivered = await this.mail.sendPasswordResetEmail(user.email, resetUrl);
+      if (!delivered) {
+        this.logger.warn(
+          `Issued a reset token for user ${user.id} but the email could not be sent`,
+        );
+      }
     }
     return { ok: true };
   }

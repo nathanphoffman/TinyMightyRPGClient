@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { type UseFormRegister, useFieldArray } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { FormSection } from "./FormSection";
 import type { CharacterFormControl, CharacterFormValues } from "./types";
 
 export function InventoryField({
@@ -16,9 +17,9 @@ export function InventoryField({
   const inventoryFields = useFieldArray({ control, name: "inventory" });
 
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-sm font-medium">Starting items</p>
+    <FormSection
+      title="Starting items"
+      action={
         <Button
           type="button"
           variant="outline"
@@ -27,7 +28,8 @@ export function InventoryField({
         >
           Add item
         </Button>
-      </div>
+      }
+    >
       <div className="flex flex-col gap-2">
         {inventoryFields.fields.map((field, index) => (
           <div key={field.id} className="flex items-center gap-2">
@@ -54,9 +56,9 @@ export function InventoryField({
           </div>
         ))}
         {inventoryFields.fields.length === 0 && (
-          <p className="text-sm text-muted-foreground">No starting items yet.</p>
+          <p className="text-base text-muted-foreground">No starting items yet.</p>
         )}
       </div>
-    </div>
+    </FormSection>
   );
 }

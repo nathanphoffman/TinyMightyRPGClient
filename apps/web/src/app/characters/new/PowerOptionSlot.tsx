@@ -147,7 +147,7 @@ export function PowerOptionSlot({
           )}
           {needsDiceType && (
             <div className="flex flex-col gap-2">
-              <label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <input type="checkbox" {...register(`powerOptions.${index}.hasRestriction`)} />
                 Add restriction
               </label>
@@ -158,7 +158,7 @@ export function PowerOptionSlot({
                     className="bg-card"
                     {...register(`powerOptions.${index}.restriction`)}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     Because of this restriction
                     {powerOptions[index]?.restriction
                       ? ` — "${powerOptions[index].restriction}"`

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { nestApi } from "@/lib/api/nest-client";
+import { ApiError, nestApi } from "@/lib/api/nest-client";
 
 export default function ForgotPasswordPage() {
   const {
@@ -47,7 +47,11 @@ export default function ForgotPasswordPage() {
               </div>
 
               {forgotPassword.isError && (
-                <p className="text-sm text-destructive">Something went wrong. Try again.</p>
+                <p className="text-sm text-destructive">
+                  {forgotPassword.error instanceof ApiError && forgotPassword.error.isNetworkError
+                    ? "Couldn't reach the server. Check that the API is running, then try again."
+                    : "Something went wrong. Try again."}
+                </p>
               )}
 
               <Button type="submit" disabled={forgotPassword.isPending}>
