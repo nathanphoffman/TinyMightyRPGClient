@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuth } from "@/lib/stores/use-auth";
 
 const POWER_CATEGORY_LABELS: Record<string, string> = {
   attack: "Attack",
@@ -22,19 +22,27 @@ const POWER_DICE_LABELS: Record<string, string> = {
 
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { token, ready } = useAuth();
 
   const {
     data: character,
     isLoading,
     isError,
   } = useQuery({
-    queryKey: ["character", id, accessToken],
-    queryFn: () => nestApi.getCharacter(id, accessToken as string),
-    enabled: !!accessToken,
+    queryKey: ["character", id, token],
+    queryFn: () => nestApi.getCharacter(id, token as string),
+    enabled: !!token,
   });
 
-  if (!accessToken) {
+  if (!ready) {
+    return (
+      <main className="flex flex-1 items-center justify-center p-16">
+        <p className="text-muted-foreground">Loading…</p>
+      </main>
+    );
+  }
+
+  if (!token) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-4 p-16">
         <p className="text-muted-foreground">Log in to see this character.</p>

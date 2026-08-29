@@ -5,18 +5,30 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuth } from "@/lib/stores/use-auth";
 
 export default function CharactersPage() {
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { token, ready } = useAuth();
 
-  const { data: characters, isLoading } = useQuery({
-    queryKey: ["characters", accessToken],
-    queryFn: () => nestApi.listCharacters(accessToken as string),
-    enabled: !!accessToken,
+  const {
+    data: characters,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["characters", token],
+    queryFn: () => nestApi.listCharacters(token as string),
+    enabled: !!token,
   });
 
-  if (!accessToken) {
+  if (!ready) {
+    return (
+      <main className="flex flex-1 flex-col items-center justify-center p-16">
+        <p className="text-muted-foreground">Loading…</p>
+      </main>
+    );
+  }
+
+  if (!token) {
     return (
       <main className="flex flex-1 flex-col items-center justify-center gap-4 p-16">
         <p className="text-muted-foreground">Log in to see your characters.</p>
@@ -37,6 +49,12 @@ export default function CharactersPage() {
       </div>
 
       {isLoading && <p className="text-muted-foreground">Loading…</p>}
+
+      {isError && (
+        <p className="text-sm text-destructive">
+          Could not load your characters. Please try again.
+        </p>
+      )}
 
       <div className="flex flex-col gap-3">
         {characters?.map((character) => (

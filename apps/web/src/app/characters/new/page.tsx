@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuthStore } from "@/lib/stores/auth-store";
+import { useAuth } from "@/lib/stores/use-auth";
 import { FormSection } from "./FormSection";
 import { InventoryField } from "./InventoryField";
 import { PowerOptionsField } from "./PowerOptionsField";
@@ -20,7 +20,7 @@ import { type CharacterFormValues, characterFormResolver, DEFAULT_FORM_VALUES } 
 
 export default function NewCharacterPage() {
   const router = useRouter();
-  const accessToken = useAuthStore((state) => state.accessToken);
+  const { token, ready } = useAuth();
 
   const {
     register,
@@ -34,11 +34,19 @@ export default function NewCharacterPage() {
 
   const createCharacter = useMutation({
     mutationFn: (input: CreateCharacterInput) =>
-      nestApi.createCharacter(input, accessToken as string),
+      nestApi.createCharacter(input, token as string),
     onSuccess: () => router.push("/characters"),
   });
 
-  if (!accessToken) {
+  if (!ready) {
+    return (
+      <main className="flex flex-1 items-center justify-center p-16">
+        <p className="text-muted-foreground">Loading…</p>
+      </main>
+    );
+  }
+
+  if (!token) {
     return (
       <main className="flex flex-1 items-center justify-center p-16">
         <p className="text-lg text-muted-foreground">Log in before creating a character.</p>

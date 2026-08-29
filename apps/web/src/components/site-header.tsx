@@ -15,8 +15,8 @@ export function SiteHeader() {
           <Image
             src="/tinymighty-logo.png"
             alt="Tiny Mighty"
-            width={1298}
-            height={812}
+            width={156}
+            height={98}
             priority
             className="h-10 w-auto sm:h-12"
           />

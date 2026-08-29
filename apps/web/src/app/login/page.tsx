@@ -16,6 +16,7 @@ import { useAuthStore } from "@/lib/stores/auth-store";
 export default function LoginPage() {
   const router = useRouter();
   const setAccessToken = useAuthStore((state) => state.setAccessToken);
+  const sessionExpired = useAuthStore((state) => state.sessionExpired);
 
   const {
     register,
@@ -57,6 +58,12 @@ export default function LoginPage() {
                 <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
+
+            {sessionExpired && !login.isError && (
+              <p className="text-sm text-muted-foreground">
+                Your session expired. Please log in again.
+              </p>
+            )}
 
             {login.isError && <p className="text-sm text-destructive">Invalid credentials.</p>}
 

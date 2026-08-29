@@ -9,6 +9,7 @@ export default function Home() {
         alt="Tiny Mighty"
         width={1298}
         height={812}
+        sizes="(max-width: 448px) 100vw, 448px"
         priority
         className="w-full max-w-md animate-in fade-in slide-in-from-top-4 duration-700"
       />
