@@ -53,7 +53,8 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <p className="text-sm text-muted-foreground">
-        This reset link is missing its token. Request a new one from the{" "}
+        This reset link is missing its token. If you refreshed this page, open the link
+        from your email again. Otherwise request a new one from the{" "}
         <Link href="/forgot-password" className="underline underline-offset-4">
           forgot password
         </Link>{" "}
