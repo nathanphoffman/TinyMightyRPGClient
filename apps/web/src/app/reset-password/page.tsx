@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ResetPasswordInput } from "@tmrpg/schemas";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +13,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { nestApi } from "@/lib/api/nest-client";
 
+
+function useTokenRemovedFromUrl() {
+
+  const searchParams = useSearchParams();
+
+  // Snapshot the token on first render, then strip it from the address bar. The
+  // form keeps working off this copy, while the URL left behind in history and in
+  // any Referer header no longer carries a live credential.
+  const [token] = useState(() => searchParams.get("token") ?? "");
+
+  useEffect(() => {
+    if (searchParams.has("token")) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [searchParams]);
+
+  return token;
+}
+
 function ResetPasswordForm() {
   const router = useRouter();
-  const token = useSearchParams().get("token") ?? "";
+  const token = useTokenRemovedFromUrl();
 
   const {
     register,
