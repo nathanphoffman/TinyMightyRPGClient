@@ -11,8 +11,26 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { nestApi } from "@/lib/api/nest-client";
+import { ApiError, nestApi } from "@/lib/api/nest-client";
 
+
+/**
+ * A 400 is the API telling us the token itself is no good — the only case where
+ * asking for a fresh link helps. Anything else (the API being down, a 500) is our
+ * problem, not the link's, and saying "expired" would send the user off to request
+ * another link that fails the same way.
+ */
+function resetErrorMessage(error: unknown) {
+  if (error instanceof ApiError) {
+    if (error.isNetworkError) {
+      return "Couldn't reach the server. Check that the API is running, then try again.";
+    }
+    if (error.status === 400) {
+      return "This reset link is invalid or has expired. Request a new one.";
+    }
+  }
+  return "Something went wrong resetting your password. Try again.";
+}
 
 function useTokenRemovedFromUrl() {
 
@@ -21,6 +39,8 @@ function useTokenRemovedFromUrl() {
   // Snapshot the token on first render, then strip it from the address bar. The
   // form keeps working off this copy, while the URL left behind in history and in
   // any Referer header no longer carries a live credential.
+
+  // HUMAN: I saw a potential security flaw here because the token was not removed this does that
   const [token] = useState(() => searchParams.get("token") ?? "");
 
   useEffect(() => {
@@ -75,9 +95,7 @@ function ResetPasswordForm() {
       </div>
 
       {resetPassword.isError && (
-        <p className="text-sm text-destructive">
-          This reset link is invalid or has expired. Request a new one.
-        </p>
+        <p className="text-sm text-destructive">{resetErrorMessage(resetPassword.error)}</p>
       )}
 
       <Button type="submit" disabled={resetPassword.isPending}>
