@@ -54,6 +54,11 @@ async function request<T>(path: string, options: RequestInit = {}, token?: strin
     throw new ApiError(`Request to ${path} failed with ${res.status}`, path, res.status);
   }
 
+  // 204 has no body at all; calling res.json() on it throws.
+  if (res.status === 204) {
+    return undefined as T;
+  }
+
   return res.json() as Promise<T>;
 }
 
@@ -91,4 +96,6 @@ export const nestApi = {
     ),
   createCharacter: (input: CreateCharacterInput, token: string) =>
     request<Character>("/characters", { method: "POST", body: JSON.stringify(input) }, token),
+  deleteCharacter: (id: string, token: string) =>
+    request<void>(`/characters/${id}`, { method: "DELETE" }, token),
 };

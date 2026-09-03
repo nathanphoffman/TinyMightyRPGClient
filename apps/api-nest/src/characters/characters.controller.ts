@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { CreateCharacterInput, UpdateCharacterInput } from "@tmrpg/schemas";
 import { createZodDto } from "nestjs-zod";
 import type { JwtPayload } from "../auth/jwt.strategy.js";
@@ -28,6 +38,12 @@ export class CharactersController {
   @Post()
   create(@Body() body: CreateCharacterDto, @CurrentUser() user: JwtPayload) {
     return this.characters.create(user.sub, body);
+  }
+
+  @Delete(":id")
+  @HttpCode(204)
+  async remove(@Param("id") id: string, @CurrentUser() user: JwtPayload) {
+    await this.characters.remove(id, user.sub);
   }
 
   @Patch(":id")

@@ -72,6 +72,11 @@ export class CharactersService {
     return toDomainCharacter(row);
   }
 
+  async remove(id: string, userId: string) {
+    await this.getOwned(id, userId);
+    await this.db.character.delete({ where: { id } });
+  }
+
   async update(id: string, userId: string, input: UpdateCharacterInput) {
     await this.getOwned(id, userId);
     const row = await this.db.character.update({

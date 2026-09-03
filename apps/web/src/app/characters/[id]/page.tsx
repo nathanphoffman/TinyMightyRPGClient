@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DeleteCharacterButton } from "./DeleteCharacterButton";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuth } from "@/lib/stores/use-auth";
 
@@ -78,9 +79,12 @@ export default function CharacterPage() {
         <Link href="/characters" className="text-sm text-muted-foreground hover:underline">
           ← Back to characters
         </Link>
-        <Button asChild size="sm" variant="outline">
-          <Link href={`/characters/${character.id}/edit`}>Edit character</Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href={`/characters/${character.id}/edit`}>Edit character</Link>
+          </Button>
+          <DeleteCharacterButton id={character.id} name={character.name} token={token} />
+        </div>
       </div>
 
       <Card>
