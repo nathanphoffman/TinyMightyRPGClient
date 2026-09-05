@@ -13,15 +13,16 @@ export function CharacterStats({ hitPoints, attackBonus, defense }: CharacterSta
     <div className="grid grid-cols-3 gap-3">
       <StatBox
         label="HP"
+        tone="hp"
         value={
           <>
             {hitPoints.current}
-            <span className="text-lg font-normal text-muted-foreground">/{hitPoints.max}</span>
+            <span className="text-lg font-normal text-white/60">/{hitPoints.max}</span>
           </>
         }
       />
-      <StatBox label="Attack" value={`+${attackBonus}`} />
-      <StatBox label="Defense" value={defense} />
+      <StatBox label="Attack" tone="steel" value={`+${attackBonus}`} />
+      <StatBox label="Defense" tone="steel" value={defense} />
     </div>
   );
 }

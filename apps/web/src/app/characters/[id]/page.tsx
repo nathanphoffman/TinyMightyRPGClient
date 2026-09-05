@@ -75,14 +75,14 @@ function CharacterView({ token }: { token: string }) {
 
           <CharacterSkills skills={character.skills} />
 
-          {character.backstory && (
-            <div>
-              <p className="mb-2 text-sm font-medium">Backstory</p>
-              <p className="whitespace-pre-wrap text-sm text-muted-foreground">
-                {character.backstory}
-              </p>
-            </div>
-          )}
+          <div>
+            <p className="mb-2 text-sm font-medium">Backstory</p>
+            <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+              {character.backstory || (
+                <span className="italic">No background written yet.</span>
+              )}
+            </p>
+          </div>
 
           <CharacterPowers powers={character.powers} />
 
