@@ -2,42 +2,28 @@
 
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuth } from "@/lib/stores/use-auth";
 
 export default function CharactersPage() {
-  const { token, ready } = useAuth();
+  return (
+    <AuthGate message="Log in to see your characters.">
+      {(token) => <CharactersView token={token} />}
+    </AuthGate>
+  );
+}
 
+function CharactersView({ token }: { token: string }) {
   const {
     data: characters,
     isLoading,
     isError,
   } = useQuery({
     queryKey: ["characters", token],
-    queryFn: () => nestApi.listCharacters(token as string),
-    enabled: !!token,
+    queryFn: () => nestApi.listCharacters(token),
   });
-
-  if (!ready) {
-    return (
-      <main className="flex flex-1 flex-col items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
-  }
-
-  if (!token) {
-    return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 p-16">
-        <p className="text-muted-foreground">Log in to see your characters.</p>
-        <Button asChild>
-          <Link href="/login">Log in</Link>
-        </Button>
-      </main>
-    );
-  }
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 p-16">

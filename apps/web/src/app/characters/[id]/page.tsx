@@ -3,20 +3,27 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { AuthGate } from "@/components/auth-gate";
+import { StatusScreen } from "@/components/status-screen";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuth } from "@/lib/stores/use-auth";
 import { CharacterInventory } from "./CharacterInventory";
 import { CharacterPowers } from "./CharacterPowers";
 import { CharacterSkills } from "./CharacterSkills";
 import { CharacterStats } from "./CharacterStats";
 import { DeleteCharacterButton } from "./DeleteCharacterButton";
-import { StatusScreen } from "./StatusScreen";
 
 export default function CharacterPage() {
+  return (
+    <AuthGate message="Log in to see this character.">
+      {(token) => <CharacterView token={token} />}
+    </AuthGate>
+  );
+}
+
+function CharacterView({ token }: { token: string }) {
   const { id } = useParams<{ id: string }>();
-  const { token, ready } = useAuth();
 
   const {
     data: character,
@@ -24,21 +31,8 @@ export default function CharacterPage() {
     isError,
   } = useQuery({
     queryKey: ["character", id, token],
-    queryFn: () => nestApi.getCharacter(id, token as string),
-    enabled: !!token,
+    queryFn: () => nestApi.getCharacter(id, token),
   });
-
-  if (!ready) {
-    return <StatusScreen>Loading…</StatusScreen>;
-  }
-
-  if (!token) {
-    return (
-      <StatusScreen action={{ href: "/login", label: "Log in" }}>
-        Log in to see this character.
-      </StatusScreen>
-    );
-  }
 
   if (isLoading) {
     return <StatusScreen>Loading…</StatusScreen>;

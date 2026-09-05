@@ -4,13 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import type { CreateCharacterInput } from "@tmrpg/schemas";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { AuthGate } from "@/components/auth-gate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuth } from "@/lib/stores/use-auth";
 import { FormSection } from "./FormSection";
 import { InventoryField } from "./InventoryField";
 import { PowerOptionsField } from "./PowerOptionsField";
@@ -19,8 +19,15 @@ import { SkillsField } from "./SkillsField";
 import { type CharacterFormValues, characterFormResolver, DEFAULT_FORM_VALUES } from "./types";
 
 export default function NewCharacterPage() {
+  return (
+    <AuthGate message="Log in before creating a character.">
+      {(token) => <NewCharacterForm token={token} />}
+    </AuthGate>
+  );
+}
+
+function NewCharacterForm({ token }: { token: string }) {
   const router = useRouter();
-  const { token, ready } = useAuth();
 
   const {
     register,
@@ -33,26 +40,9 @@ export default function NewCharacterPage() {
   });
 
   const createCharacter = useMutation({
-    mutationFn: (input: CreateCharacterInput) =>
-      nestApi.createCharacter(input, token as string),
+    mutationFn: (input: CreateCharacterInput) => nestApi.createCharacter(input, token),
     onSuccess: () => router.push("/characters"),
   });
-
-  if (!ready) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
-  }
-
-  if (!token) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-lg text-muted-foreground">Log in before creating a character.</p>
-      </main>
-    );
-  }
 
   return (
     <main className="flex flex-1 flex-col items-center px-6 py-12">

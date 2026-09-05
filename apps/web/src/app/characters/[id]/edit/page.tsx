@@ -6,13 +6,14 @@ import { Trash2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { AuthGate } from "@/components/auth-gate";
+import { StatusScreen } from "@/components/status-screen";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { nestApi } from "@/lib/api/nest-client";
-import { useAuth } from "@/lib/stores/use-auth";
 
 type EditFormValues = {
   name: string;
@@ -24,15 +25,21 @@ type EditFormValues = {
 };
 
 export default function EditCharacterPage() {
+  return (
+    <AuthGate message="Log in before editing a character.">
+      {(token) => <EditCharacterForm token={token} />}
+    </AuthGate>
+  );
+}
+
+function EditCharacterForm({ token }: { token: string }) {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { token, ready } = useAuth();
 
   const { data: character, isLoading } = useQuery({
     queryKey: ["character", id, token],
-    queryFn: () => nestApi.getCharacter(id, token as string),
-    enabled: !!token,
+    queryFn: () => nestApi.getCharacter(id, token),
   });
 
   const { register, control, handleSubmit, reset } = useForm<EditFormValues>({
@@ -61,8 +68,7 @@ export default function EditCharacterPage() {
   }, [character, reset]);
 
   const updateCharacter = useMutation({
-    mutationFn: (input: UpdateCharacterInput) =>
-      nestApi.updateCharacter(id, input, token as string),
+    mutationFn: (input: UpdateCharacterInput) => nestApi.updateCharacter(id, input, token),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["character", id] });
       queryClient.invalidateQueries({ queryKey: ["characters"] });
@@ -70,28 +76,8 @@ export default function EditCharacterPage() {
     },
   });
 
-  if (!ready) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
-  }
-
-  if (!token) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Log in before editing a character.</p>
-      </main>
-    );
-  }
-
   if (isLoading || !character) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <StatusScreen>Loading…</StatusScreen>;
   }
 
   return (
