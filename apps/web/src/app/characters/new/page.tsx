@@ -105,7 +105,7 @@ export default function NewCharacterPage() {
                 <PowerOptionsField
                   control={control}
                   register={register}
-                  hasError={Boolean(errors.powerOptions)}
+                  error={errors.powerOptions?.message}
                 />
               </div>
             </div>

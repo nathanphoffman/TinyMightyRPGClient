@@ -49,6 +49,12 @@ export function PowerOptionSlot({
             value={field.value}
             onChange={(event) => field.onChange(event.target.value)}
           >
+            <option value="">Select one…</option>
+            {/* Only the hard caps grey out — a player can never get past them,
+                so the option is genuinely unpickable. "+1 more power use" is
+                left enabled even with no special power to point at yet: that's
+                an ordering problem the player fixes by filling another slot,
+                and its own dropdown below says so. */}
             {POWER_OPTION_TYPES.map((option) => {
               const isAttackCapped =
                 option.value === "attackBonus" &&
@@ -58,17 +64,11 @@ export function PowerOptionSlot({
                 option.value === "defenseBonus" &&
                 selectedType !== "defenseBonus" &&
                 defenseBonusPicks >= 1;
-              const isExtraPowerUseBlocked =
-                option.value === "extraPowerUse" &&
-                selectedType !== "extraPowerUse" &&
-                availablePowerNames.length === 0;
+              const isCapped = isAttackCapped || isDefenseCapped;
               return (
-                <option
-                  key={option.value}
-                  value={option.value}
-                  disabled={isAttackCapped || isDefenseCapped || isExtraPowerUseBlocked}
-                >
+                <option key={option.value} value={option.value} disabled={isCapped}>
                   {option.label}
+                  {isCapped ? " — already maxed out" : ""}
                 </option>
               );
             })}

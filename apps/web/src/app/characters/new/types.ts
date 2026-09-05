@@ -34,8 +34,10 @@ export const POWER_NAME_PLACEHOLDERS: Record<PowerCategory, string> = {
   nonAttack: "Power name (eg. Sticky Climb)",
 };
 
+// "" is the unselected state. Every slot starts there so the player makes
+// three deliberate picks rather than editing a pre-filled combo.
 export type PowerOptionFormValue = {
-  type: PowerOptionType;
+  type: PowerOptionType | "";
   name: string;
   description: string;
   category: PowerCategory;
@@ -58,8 +60,8 @@ export type CharacterFormValues = {
 // generic — every component that takes `control` needs this exact alias.
 export type CharacterFormControl = Control<CharacterFormValues, unknown, CreateCharacterInput>;
 
-const emptyPowerOption = (type: PowerOptionType): PowerOptionFormValue => ({
-  type,
+const emptyPowerOption = (): PowerOptionFormValue => ({
+  type: "",
   name: "",
   description: "",
   category: "nonAttack",
@@ -69,8 +71,6 @@ const emptyPowerOption = (type: PowerOptionType): PowerOptionFormValue => ({
   targetPowerName: "",
 });
 
-// A self-consistent starting combo (two attack picks + one defense pick)
-// so the caps aren't already violated before the player touches anything.
 export const DEFAULT_FORM_VALUES: CharacterFormValues = {
   name: "",
   skills: {
@@ -80,11 +80,7 @@ export const DEFAULT_FORM_VALUES: CharacterFormValues = {
     senses: undefined,
   },
   backstory: "",
-  powerOptions: [
-    emptyPowerOption("attackBonus"),
-    emptyPowerOption("attackBonus"),
-    emptyPowerOption("defenseBonus"),
-  ],
+  powerOptions: [emptyPowerOption(), emptyPowerOption(), emptyPowerOption()],
   inventory: [],
 };
 
@@ -135,5 +131,16 @@ export const characterFormResolver: Resolver<CharacterFormValues, unknown, Creat
       Object.assign(errors, { [root]: { type: "validation", message: issue.message } });
     }
   }
+
+  // An unselected slot serializes as { type: "" }, which the discriminated
+  // union rejects with an unhelpful message about the discriminator. Say what
+  // the player actually has to do instead, but only after the loop above so
+  // the other sections still report their own errors.
+  if (values.powerOptions.some((option) => option.type === "")) {
+    Object.assign(errors, {
+      powerOptions: { type: "validation", message: "Choose an option for all 3 power slots" },
+    });
+  }
+
   return { values: {}, errors };
 };
