@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useState } from "react";
 import { AuthGate } from "@/components/auth-gate";
 import { StatusScreen } from "@/components/status-screen";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,8 @@ import { CharacterPowers } from "./CharacterPowers";
 import { CharacterSkills } from "./CharacterSkills";
 import { CharacterStats } from "./CharacterStats";
 import { DeleteCharacterButton } from "./DeleteCharacterButton";
+import { type DiceRoll, rollDice } from "./dice";
+import { DiceTray } from "./DiceTray";
 
 export default function CharacterPage() {
   return (
@@ -24,6 +27,7 @@ export default function CharacterPage() {
 
 function CharacterView({ token }: { token: string }) {
   const { id } = useParams<{ id: string }>();
+  const [roll, setRoll] = useState<DiceRoll | null>(null);
 
   const {
     data: character,
@@ -71,9 +75,15 @@ function CharacterView({ token }: { token: string }) {
             hitPoints={character.hitPoints}
             attackBonus={character.attackBonus}
             defense={character.defense}
+            onRollAttack={(label, modifier) => setRoll(rollDice(modifier, label))}
           />
 
-          <CharacterSkills skills={character.skills} />
+          <CharacterSkills
+            skills={character.skills}
+            onRollSkill={(label, modifier) => setRoll(rollDice(modifier, label))}
+          />
+
+          <DiceTray roll={roll} onRoll={() => setRoll(rollDice())} />
 
           <div>
             <p className="mb-2 text-sm font-medium">Backstory</p>

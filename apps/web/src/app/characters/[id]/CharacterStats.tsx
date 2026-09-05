@@ -5,10 +5,17 @@ interface CharacterStatsProps {
   hitPoints: HitPoints;
   attackBonus: number;
   defense: number;
+  /** Rolls 2d6 + attack bonus when the Attack box is tapped. */
+  onRollAttack: (label: string, modifier: number) => void;
 }
 
 /** Top-of-sheet vitals: HP, attack bonus, defense. */
-export function CharacterStats({ hitPoints, attackBonus, defense }: CharacterStatsProps) {
+export function CharacterStats({
+  hitPoints,
+  attackBonus,
+  defense,
+  onRollAttack,
+}: CharacterStatsProps) {
   return (
     <div className="grid grid-cols-3 gap-3">
       <StatBox
@@ -21,7 +28,12 @@ export function CharacterStats({ hitPoints, attackBonus, defense }: CharacterSta
           </>
         }
       />
-      <StatBox label="Attack" tone="steel" value={`+${attackBonus}`} />
+      <StatBox
+        label="Attack"
+        tone="steel"
+        value={`+${attackBonus}`}
+        onClick={() => onRollAttack("Attack", attackBonus)}
+      />
       <StatBox label="Defense" tone="steel" value={defense} />
     </div>
   );

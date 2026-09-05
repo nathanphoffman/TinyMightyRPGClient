@@ -20,27 +20,44 @@ const TONE_LABEL: Record<StatTone, string> = {
   steel: "text-white/70",
 };
 
-/** Character-sheet style stat square: a small caps label over a large score. */
-export function StatBox({
-  label,
-  value,
-  tone = "default",
-}: {
+interface StatBoxProps {
   label: string;
   value: ReactNode;
   tone?: StatTone;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex flex-col items-center gap-1 rounded-lg border p-3 text-center",
-        TONE_BOX[tone],
-      )}
-    >
+  /** When set, the box becomes a button — used for stats you can roll against. */
+  onClick?: () => void;
+}
+
+/** Character-sheet style stat square: a small caps label over a large score. */
+export function StatBox({ label, value, tone = "default", onClick }: StatBoxProps) {
+  const box = cn(
+    "flex flex-col items-center gap-1 rounded-lg border p-3 text-center",
+    TONE_BOX[tone],
+  );
+
+  const content = (
+    <>
       <span className={cn("text-xs font-medium uppercase tracking-wide", TONE_LABEL[tone])}>
         {label}
       </span>
       <span className="text-3xl font-semibold tabular-nums">{value}</span>
-    </div>
+    </>
+  );
+
+  if (!onClick) {
+    return <div className={box}>{content}</div>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        box,
+        "transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]",
+      )}
+    >
+      {content}
+    </button>
   );
 }
