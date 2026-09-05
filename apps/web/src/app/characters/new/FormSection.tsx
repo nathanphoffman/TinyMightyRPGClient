@@ -21,7 +21,7 @@ export function FormSection({
   return (
     <section className={cn("rounded-lg border border-border bg-card/50 p-4", className)}>
       <div className="mb-2 flex items-start justify-between gap-3">
-        <p className="text-base font-medium">{title}</p>
+        <p className="text-xl font-medium">{title}</p>
         {action}
       </div>
       {description && <p className="mb-3 text-sm text-muted-foreground">{description}</p>}

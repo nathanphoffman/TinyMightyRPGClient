@@ -2,6 +2,7 @@
 
 import { Controller, type UseFormRegister } from "react-hook-form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -37,24 +38,35 @@ export function PowerOptionSlot({
         .map((o) => o.name.trim()),
     ),
   ];
+  // A special power slot exists elsewhere but isn't usable as a target yet
+  // because it has no name — the fix is to name it, not to add another.
+  const hasUnnamedOtherPower =
+    availablePowerNames.length === 0 &&
+    (powerOptions ?? []).some((o, i) => i !== index && o.type === "specialPower");
+  const extraUseHint = hasUnnamedOtherPower
+    ? " — name your special power first"
+    : " — add a special power first";
 
   return (
     <div className="flex flex-col gap-2 rounded-lg border border-border bg-muted p-3">
+      <Label htmlFor={`powerOption-${index}`} className="text-base text-muted-foreground">
+        Power {index + 1}
+      </Label>
       <Controller
         control={control}
         name={`powerOptions.${index}.type`}
         render={({ field }) => (
           <Select
+            id={`powerOption-${index}`}
             className="bg-card"
             value={field.value}
             onChange={(event) => field.onChange(event.target.value)}
           >
             <option value="">Select one…</option>
-            {/* Only the hard caps grey out — a player can never get past them,
-                so the option is genuinely unpickable. "+1 more power use" is
-                left enabled even with no special power to point at yet: that's
-                an ordering problem the player fixes by filling another slot,
-                and its own dropdown below says so. */}
+            {/* Grey out an option this slot genuinely can't take: the hard
+                caps (+2 attack past +4, +2 defense past 7), and "+1 more power
+                use" while no other slot has a *named* special power for it to
+                attach to — the label says whether to add one or just name it. */}
             {POWER_OPTION_TYPES.map((option) => {
               const isAttackCapped =
                 option.value === "attackBonus" &&
@@ -64,11 +76,20 @@ export function PowerOptionSlot({
                 option.value === "defenseBonus" &&
                 selectedType !== "defenseBonus" &&
                 defenseBonusPicks >= 1;
+              const isExtraUseWithoutPower =
+                option.value === "extraPowerUse" &&
+                selectedType !== "extraPowerUse" &&
+                availablePowerNames.length === 0;
               const isCapped = isAttackCapped || isDefenseCapped;
               return (
-                <option key={option.value} value={option.value} disabled={isCapped}>
+                <option
+                  key={option.value}
+                  value={option.value}
+                  disabled={isCapped || isExtraUseWithoutPower}
+                >
                   {option.label}
                   {isCapped ? " — already maxed out" : ""}
+                  {isExtraUseWithoutPower ? extraUseHint : ""}
                 </option>
               );
             })}

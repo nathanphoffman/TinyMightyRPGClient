@@ -31,13 +31,19 @@ const optionIn = (select: HTMLElement, name: RegExp) =>
   within(select).getByRole("option", { name }) as HTMLOptionElement;
 
 describe("PowerOptionsField", () => {
-  it("starts every slot unselected with nothing greyed out", () => {
+  it("starts every slot unselected, with only +1 more power use greyed out", () => {
     render(<Harness />);
+
+    expect(screen.getByText("Power 1")).toBeInTheDocument();
+    expect(screen.getByText("Power 2")).toBeInTheDocument();
+    expect(screen.getByText("Power 3")).toBeInTheDocument();
 
     for (const select of typeSelects()) {
       expect((select as HTMLSelectElement).value).toBe("");
       for (const option of within(select).getAllByRole("option")) {
-        expect((option as HTMLOptionElement).disabled).toBe(false);
+        const el = option as HTMLOptionElement;
+        // No caps hit yet; the extra-use pick has no special power to attach to.
+        expect(el.disabled).toBe(el.value === "extraPowerUse");
       }
     }
   });
@@ -68,18 +74,26 @@ describe("PowerOptionsField", () => {
     expect(optionIn(typeSelect(0), /\+2 defense/).disabled).toBe(false);
   });
 
-  it("lets +1 more power use be picked before any special power is named", async () => {
+  it("keeps +1 more power use disabled until another slot names a special power", async () => {
     const user = userEvent.setup();
     render(<Harness />);
 
-    expect(optionIn(typeSelect(1), /\+1 more power use/).disabled).toBe(false);
+    const extraUse = () => optionIn(typeSelect(1), /\+1 more power use/);
+
+    expect(extraUse().disabled).toBe(true);
+    expect(extraUse().textContent).toContain("add a special power first");
+
+    // A special power slot exists now, but with no name it still can't be a
+    // target — the hint switches to say what's actually missing.
+    await user.selectOptions(typeSelect(0), "specialPower");
+    expect(extraUse().disabled).toBe(true);
+    expect(extraUse().textContent).toContain("name your special power first");
+
+    await user.type(screen.getByPlaceholderText(/Power name/), "Fireball");
+    expect(extraUse().disabled).toBe(false);
+    expect(extraUse().textContent).not.toMatch(/special power first/);
 
     await user.selectOptions(typeSelect(1), "extraPowerUse");
-    expect(screen.getByText("Name a special power in another slot first")).toBeInTheDocument();
-
-    await user.selectOptions(typeSelect(0), "specialPower");
-    await user.type(screen.getByPlaceholderText(/Power name/), "Fireball");
-
     expect(await screen.findByRole("option", { name: "Fireball" })).toBeInTheDocument();
   });
 });
