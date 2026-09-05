@@ -3,36 +3,16 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuth } from "@/lib/stores/use-auth";
+import { CharacterInventory } from "./CharacterInventory";
+import { CharacterPowers } from "./CharacterPowers";
+import { CharacterSkills } from "./CharacterSkills";
+import { CharacterStats } from "./CharacterStats";
 import { DeleteCharacterButton } from "./DeleteCharacterButton";
-
-const POWER_CATEGORY_LABELS: Record<string, string> = {
-  attack: "Attack",
-  heal: "Heal",
-  nonAttack: "Non-Attack",
-};
-
-const POWER_DICE_LABELS: Record<string, string> = {
-  multiTarget: "Multi-Target (3d6)",
-  directTarget: "Direct-Target (2d6)",
-  areaOfEffect: "Area of Effect (1d6)",
-};
-
-/** Character-sheet style stat square: a small caps label over a large score. */
-function StatBox({ label, value }: { label: string; value: ReactNode }) {
-  return (
-    <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted p-3 text-center">
-      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </span>
-      <span className="text-3xl font-semibold tabular-nums">{value}</span>
-    </div>
-  );
-}
+import { StatusScreen } from "./StatusScreen";
 
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
@@ -49,40 +29,26 @@ export default function CharacterPage() {
   });
 
   if (!ready) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <StatusScreen>Loading…</StatusScreen>;
   }
 
   if (!token) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 p-16">
-        <p className="text-muted-foreground">Log in to see this character.</p>
-        <Button asChild>
-          <Link href="/login">Log in</Link>
-        </Button>
-      </main>
+      <StatusScreen action={{ href: "/login", label: "Log in" }}>
+        Log in to see this character.
+      </StatusScreen>
     );
   }
 
   if (isLoading) {
-    return (
-      <main className="flex flex-1 items-center justify-center p-16">
-        <p className="text-muted-foreground">Loading…</p>
-      </main>
-    );
+    return <StatusScreen>Loading…</StatusScreen>;
   }
 
   if (isError || !character) {
     return (
-      <main className="flex flex-1 flex-col items-center justify-center gap-4 p-16">
-        <p className="text-muted-foreground">Couldn&apos;t find that character.</p>
-        <Button asChild variant="outline">
-          <Link href="/characters">Back to characters</Link>
-        </Button>
-      </main>
+      <StatusScreen action={{ href: "/characters", label: "Back to characters", variant: "outline" }}>
+        Couldn&apos;t find that character.
+      </StatusScreen>
     );
   }
 
@@ -107,30 +73,13 @@ export default function CharacterPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
-          <div className="grid grid-cols-3 gap-3">
-            <StatBox
-              label="HP"
-              value={
-                <>
-                  {character.hitPoints.current}
-                  <span className="text-lg font-normal text-muted-foreground">
-                    /{character.hitPoints.max}
-                  </span>
-                </>
-              }
-            />
-            <StatBox label="Attack" value={`+${character.attackBonus}`} />
-            <StatBox label="Defense" value={character.defense} />
-          </div>
+          <CharacterStats
+            hitPoints={character.hitPoints}
+            attackBonus={character.attackBonus}
+            defense={character.defense}
+          />
 
-          <div>
-            <p className="mb-2 text-sm font-medium">Skills</p>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              {Object.entries(character.skills).map(([skill, value]) => (
-                <StatBox key={skill} label={skill} value={`+${value}`} />
-              ))}
-            </div>
-          </div>
+          <CharacterSkills skills={character.skills} />
 
           {character.backstory && (
             <div>
@@ -141,53 +90,9 @@ export default function CharacterPage() {
             </div>
           )}
 
-          {character.powers.length > 0 && (
-            <div>
-              <p className="mb-2 text-sm font-medium">Powers</p>
-              <div className="flex flex-col gap-2">
-                {character.powers.map((power) => (
-                  <div key={power.id} className="rounded-lg border border-border p-2 text-sm">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium">{power.name}</p>
-                      <span className="text-xs text-muted-foreground">
-                        {POWER_CATEGORY_LABELS[power.category]}
-                        {power.diceType && ` · ${POWER_DICE_LABELS[power.diceType]}`}
-                        {` · ${power.usesUsed}/${power.usesMax} uses`}
-                      </span>
-                    </div>
-                    {power.description && (
-                      <p className="text-xs text-muted-foreground">{power.description}</p>
-                    )}
-                    {power.restriction && (
-                      <p className="mt-1 text-xs italic text-muted-foreground">
-                        Restriction: {power.restriction} — may reroll a single die (GM approval).
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <CharacterPowers powers={character.powers} />
 
-          <div>
-            <p className="mb-2 text-sm font-medium">Inventory</p>
-            {character.inventory.length === 0 && (
-              <p className="text-sm text-muted-foreground">No items yet.</p>
-            )}
-            <div className="flex flex-col gap-2">
-              {character.inventory.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between rounded-lg border border-border p-2 text-sm"
-                >
-                  <span>
-                    {item.name} {item.equipped && <span className="text-xs">(equipped)</span>}
-                  </span>
-                  <span className="text-muted-foreground">×{item.quantity}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+          <CharacterInventory inventory={character.inventory} />
         </CardContent>
       </Card>
     </main>
