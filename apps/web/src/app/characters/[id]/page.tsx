@@ -3,11 +3,12 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DeleteCharacterButton } from "./DeleteCharacterButton";
 import { nestApi } from "@/lib/api/nest-client";
 import { useAuth } from "@/lib/stores/use-auth";
+import { DeleteCharacterButton } from "./DeleteCharacterButton";
 
 const POWER_CATEGORY_LABELS: Record<string, string> = {
   attack: "Attack",
@@ -20,6 +21,18 @@ const POWER_DICE_LABELS: Record<string, string> = {
   directTarget: "Direct-Target (2d6)",
   areaOfEffect: "Area of Effect (1d6)",
 };
+
+/** Character-sheet style stat square: a small caps label over a large score. */
+function StatBox({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="flex flex-col items-center gap-1 rounded-lg border border-border bg-muted p-3 text-center">
+      <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
+      <span className="text-3xl font-semibold tabular-nums">{value}</span>
+    </div>
+  );
+}
 
 export default function CharacterPage() {
   const { id } = useParams<{ id: string }>();
@@ -94,25 +107,27 @@ export default function CharacterPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-5">
-          <div className="flex gap-4 text-sm text-muted-foreground">
-            <span>
-              HP {character.hitPoints.current}/{character.hitPoints.max}
-            </span>
-            <span>Attack +{character.attackBonus}</span>
-            <span>Defense {character.defense}</span>
+          <div className="grid grid-cols-3 gap-3">
+            <StatBox
+              label="HP"
+              value={
+                <>
+                  {character.hitPoints.current}
+                  <span className="text-lg font-normal text-muted-foreground">
+                    /{character.hitPoints.max}
+                  </span>
+                </>
+              }
+            />
+            <StatBox label="Attack" value={`+${character.attackBonus}`} />
+            <StatBox label="Defense" value={character.defense} />
           </div>
 
           <div>
             <p className="mb-2 text-sm font-medium">Skills</p>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {Object.entries(character.skills).map(([skill, value]) => (
-                <div
-                  key={skill}
-                  className="flex items-center justify-between rounded-lg border border-border bg-muted p-2"
-                >
-                  <span className="text-xs capitalize text-muted-foreground">{skill}</span>
-                  <span className="text-sm font-medium">+{value}</span>
-                </div>
+                <StatBox key={skill} label={skill} value={`+${value}`} />
               ))}
             </div>
           </div>
