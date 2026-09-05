@@ -28,6 +28,8 @@ export default function CharacterPage() {
 function CharacterView({ token }: { token: string }) {
   const { id } = useParams<{ id: string }>();
   const [roll, setRoll] = useState<DiceRoll | null>(null);
+  const rollCheck = (label: string, modifier: number) =>
+    setRoll(rollDice({ modifier, label }));
 
   const {
     data: character,
@@ -75,13 +77,10 @@ function CharacterView({ token }: { token: string }) {
             hitPoints={character.hitPoints}
             attackBonus={character.attackBonus}
             defense={character.defense}
-            onRollAttack={(label, modifier) => setRoll(rollDice(modifier, label))}
+            onRollAttack={rollCheck}
           />
 
-          <CharacterSkills
-            skills={character.skills}
-            onRollSkill={(label, modifier) => setRoll(rollDice(modifier, label))}
-          />
+          <CharacterSkills skills={character.skills} onRollSkill={rollCheck} />
 
           <DiceTray roll={roll} onRoll={() => setRoll(rollDice())} />
 
@@ -94,7 +93,10 @@ function CharacterView({ token }: { token: string }) {
             </p>
           </div>
 
-          <CharacterPowers powers={character.powers} />
+          <CharacterPowers
+            powers={character.powers}
+            onRollPower={(count, label) => setRoll(rollDice({ count, label }))}
+          />
 
           <CharacterInventory inventory={character.inventory} />
         </CardContent>

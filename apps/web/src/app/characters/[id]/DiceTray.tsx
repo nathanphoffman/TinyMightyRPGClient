@@ -45,11 +45,13 @@ export function DiceTray({ roll, onRoll }: DiceTrayProps) {
           className="flex items-center gap-3 duration-200 animate-in fade-in slide-in-from-left-1"
         >
           <span className="flex gap-1.5">
-            <Die value={roll.dice[0]} />
-            <Die value={roll.dice[1]} />
+            {roll.dice.map((value, i) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: dice are positional, no stable id
+              <Die key={i} value={value} />
+            ))}
           </span>
           <span className="text-sm tabular-nums text-muted-foreground">
-            {roll.dice[0]} + {roll.dice[1]}
+            {roll.dice.join(" + ")}
             {roll.modifier !== 0 &&
               ` ${roll.modifier > 0 ? "+" : "−"} ${Math.abs(roll.modifier)}`}
             {roll.label && <span className="not-tabular-nums"> · {roll.label}</span>}
@@ -58,7 +60,7 @@ export function DiceTray({ roll, onRoll }: DiceTrayProps) {
         </div>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Roll 2d6, or tap a skill to add its modifier.
+          Roll 2d6, or tap a skill, Attack, or a power.
         </p>
       )}
       <Button size="sm" onClick={onRoll}>
